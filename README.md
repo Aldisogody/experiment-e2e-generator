@@ -16,7 +16,7 @@ A CLI tool to scaffold Playwright E2E testing infrastructure for Experiment Fram
 No installation required! Use `npx` to run directly:
 
 ```bash
-npx @sogody/experiment-e2e-generator
+npx experiment-e2e-generator
 ```
 
 ### Requirements
