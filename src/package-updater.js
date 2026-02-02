@@ -1,6 +1,7 @@
 import path from 'path';
+import { spawnSync } from 'child_process';
 import fs from 'fs-extra';
-import { mergePackageJson, formatPackageJson } from './utils.js';
+import { mergePackageJson, formatPackageJson, pathExists } from './utils.js';
 
 /**
  * Update package.json with Playwright dependencies and scripts
@@ -70,4 +71,38 @@ export async function isPlaywrightInstalled(targetDir) {
 	} catch {
 		return false;
 	}
+}
+
+/**
+ * Detect which package manager the project uses
+ * @param {string} targetDir - Target project directory
+ * @returns {'yarn' | 'npm'}
+ */
+export async function detectPackageManager(targetDir) {
+	const hasYarnLock = await pathExists(path.join(targetDir, 'yarn.lock'));
+	return hasYarnLock ? 'yarn' : 'npm';
+}
+
+/**
+ * Install dependencies in the target project (only installs what's in its package.json, e.g. Playwright)
+ * @param {string} targetDir - Target project directory
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export async function installDependencies(targetDir) {
+	const packageManager = await detectPackageManager(targetDir);
+	const isWindows = process.platform === 'win32';
+	const cmd = packageManager === 'yarn' ? 'yarn' : 'npm';
+	const args = ['install'];
+	const result = spawnSync(cmd, args, {
+		cwd: targetDir,
+		stdio: 'inherit',
+		shell: isWindows,
+	});
+	if (result.status !== 0) {
+		return {
+			success: false,
+			error: `${packageManager} install failed with exit code ${result.status}`,
+		};
+	}
+	return { success: true };
 }

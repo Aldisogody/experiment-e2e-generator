@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { validateProjectDirectory, pathExists } from './utils.js';
 import { getUserInput, confirmAction } from './prompts.js';
 import { generateTestFiles, testsDirectoryExists, getGeneratedFilesList } from './file-operations.js';
-import { updatePackageJson, isPlaywrightInstalled } from './package-updater.js';
+import { updatePackageJson, isPlaywrightInstalled, installDependencies } from './package-updater.js';
 
 /**
  * Main generator function
@@ -69,21 +69,38 @@ export async function generator() {
 			console.log(chalk.gray('  ℹ No package.json updates needed'));
 		}
 		
-		// Step 5: Display completion message
+		// Step 5: Install dependencies in target project (only Playwright from its package.json)
+		let installSucceeded = false;
+		if (packageResult.updated) {
+			console.log(chalk.blue('\n📥 Installing Playwright...\n'));
+			const installResult = await installDependencies(cwd);
+			if (installResult.success) {
+				installSucceeded = true;
+				console.log(chalk.green('  ✓ Playwright installed\n'));
+			} else {
+				console.log(chalk.yellow(`  ⚠ ${installResult.error}`));
+				console.log(chalk.gray('  Run yarn install or npm install in this directory to install Playwright.\n'));
+			}
+		}
+		
+		// Step 6: Display completion message
 		console.log(chalk.green.bold('\n✓ Test structure generated successfully!\n'));
 		
 		console.log(chalk.blue('Next steps:\n'));
-		console.log(chalk.white('  1. Install dependencies:'));
-		console.log(chalk.gray('     yarn install\n'));
-		
-		console.log(chalk.white('  2. Update test URLs in:'));
+		let step = 1;
+		if (!installSucceeded && packageResult.updated) {
+			console.log(chalk.white(`  ${step}. Install dependencies:`));
+			console.log(chalk.gray('     yarn install  (or npm install)\n'));
+			step++;
+		}
+		console.log(chalk.white(`  ${step}. Update test URLs in:`));
 		console.log(chalk.gray('     tests/config/qa-links.config.js\n'));
-		
-		console.log(chalk.white('  3. Customize test selectors in:'));
+		step++;
+		console.log(chalk.white(`  ${step}. Customize test selectors in:`));
 		console.log(chalk.gray(`     tests/e2e/${config.experimentName.toLowerCase().replace(/\s+/g, '-')}/${config.experimentName.toLowerCase().replace(/\s+/g, '-')}.spec.js\n`));
-		
-		console.log(chalk.white('  4. Run tests:'));
-		console.log(chalk.gray('     yarn test:e2e\n'));
+		step++;
+		console.log(chalk.white(`  ${step}. Run tests:`));
+		console.log(chalk.gray('     yarn test:e2e  (or npm run test:e2e)\n'));
 		
 		console.log(chalk.blue('📖 Documentation:'));
 		console.log(chalk.gray('   https://playwright.dev/docs/intro\n'));
