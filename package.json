@@ -1,5 +1,8 @@
 {
     "name": "experiment-e2e-generator",
+    "publishConfig": {
+        "access": "public"
+    },
     "version": "1.0.0",
     "description": "CLI tool to generate Playwright e2e tests for Experiment Framework projects",
     "type": "module",
