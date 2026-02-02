@@ -21,7 +21,7 @@ npx experiment-e2e-generator
 
 ### Requirements
 
-- Node.js >= 16.15.1
+- Node.js >= 18 (required by Playwright 1.40+)
 - Existing `package.json` in project root
 - Project must be an Experiment Framework project
 
@@ -344,8 +344,8 @@ The generator safely updates your `package.json`:
 ```json
 {
   "devDependencies": {
-    "@playwright/test": "^1.40.0",
-    "playwright": "^1.40.0"
+    "@playwright/test": "1.40.0",
+    "playwright": "1.40.0"
   }
 }
 ```
