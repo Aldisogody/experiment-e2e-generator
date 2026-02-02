@@ -1,0 +1,13 @@
+# Development files
+.cursor/
+example-tests-directory/
+.DS_Store
+*.log
+
+# Git
+.git/
+.gitignore
+
+# Keep LICENSE and README
+!LICENSE
+!README.md
