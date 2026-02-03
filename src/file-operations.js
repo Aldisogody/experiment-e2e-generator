@@ -89,3 +89,34 @@ export function getGeneratedFilesList(experimentName) {
 		`tests/e2e/${experimentNameKebab}/${experimentNameKebab}.spec.js`,
 	];
 }
+
+/**
+ * Add tests/ to .eslintignore if not already present.
+ * Does nothing if .eslintignore does not exist.
+ * @param {string} targetDir - Target project directory
+ * @returns {Promise<{updated: boolean}>} - Whether the file was updated
+ */
+export async function addTestsToEslintIgnore(targetDir) {
+	const eslintIgnorePath = path.join(targetDir, '.eslintignore');
+
+	if (!(await fs.pathExists(eslintIgnorePath))) {
+		return { updated: false };
+	}
+
+	const content = await fs.readFile(eslintIgnorePath, 'utf-8');
+	const lines = content.split(/\r?\n/);
+	const hasTestsEntry = lines.some((line) => {
+		const trimmed = line.trim();
+		return trimmed === 'tests' || trimmed === 'tests/';
+	});
+
+	if (hasTestsEntry) {
+		return { updated: false };
+	}
+
+	const suffix = content.endsWith('\n') ? '' : '\n';
+	const newContent = content + suffix + 'tests/\n';
+	await fs.writeFile(eslintIgnorePath, newContent, 'utf-8');
+
+	return { updated: true };
+}

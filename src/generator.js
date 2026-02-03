@@ -2,7 +2,7 @@ import path from 'path';
 import chalk from 'chalk';
 import { validateProjectDirectory, pathExists } from './utils.js';
 import { getUserInput, confirmAction } from './prompts.js';
-import { generateTestFiles, testsDirectoryExists, getGeneratedFilesList } from './file-operations.js';
+import { generateTestFiles, testsDirectoryExists, getGeneratedFilesList, addTestsToEslintIgnore } from './file-operations.js';
 import { updatePackageJson, isPlaywrightInstalled, installDependencies } from './package-updater.js';
 
 /**
@@ -56,6 +56,13 @@ export async function generator() {
 		generatedFiles.forEach(file => {
 			console.log(chalk.green(`  ✓ ${file}`));
 		});
+
+		if (!config.runEslintOnTests) {
+			const eslintResult = await addTestsToEslintIgnore(cwd);
+			if (eslintResult.updated) {
+				console.log(chalk.green('  ✓ Added tests/ to .eslintignore'));
+			}
+		}
 		
 		// Step 4: Update package.json
 		console.log(chalk.blue('\n📦 Updating package.json...\n'));

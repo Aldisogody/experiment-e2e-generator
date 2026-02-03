@@ -55,6 +55,12 @@ export async function getUserInput(cwd) {
 				return true;
 			},
 		},
+		{
+			type: 'confirm',
+			name: 'runEslintOnTests',
+			message: 'Do you want to run ESLint on tests?',
+			initial: false,
+		},
 	];
 	
 	const response = await prompts(questions, {
