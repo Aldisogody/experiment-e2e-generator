@@ -46,8 +46,8 @@ export async function generateTestFiles(targetDir, config) {
 			`tests/e2e/${experimentNameKebab}/${experimentNameKebab}.spec.js`,
 		],
 		[
-			'tests/e2e/experiment-name/basic-test.spec.js',
-			`tests/e2e/${experimentNameKebab}/basic-test.spec.js`,
+			'tests/e2e/experiment-name/experiment-test.spec.js',
+			`tests/e2e/${experimentNameKebab}/experiment-test.spec.js`,
 		],
 	];
 	
@@ -91,7 +91,7 @@ export function getGeneratedFilesList(experimentName) {
 		'tests/fixtures/test-fixtures.js',
 		'tests/utils/test-helpers.js',
 		`tests/e2e/${experimentNameKebab}/${experimentNameKebab}.spec.js`,
-		`tests/e2e/${experimentNameKebab}/basic-test.spec.js`,
+		`tests/e2e/${experimentNameKebab}/experiment-test.spec.js`,
 	];
 }
 

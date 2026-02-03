@@ -107,7 +107,8 @@ export async function generator() {
 		console.log(chalk.gray(`     tests/e2e/${config.experimentName.toLowerCase().replace(/\s+/g, '-')}/${config.experimentName.toLowerCase().replace(/\s+/g, '-')}.spec.js\n`));
 		step++;
 		console.log(chalk.white(`  ${step}. Run tests:`));
-		console.log(chalk.gray('     yarn test:e2e  (or npm run test:e2e)\n'));
+		console.log(chalk.gray('     Run experiment smoke test: yarn test:e2e:experiment  (or npm run test:e2e:experiment)'));
+		console.log(chalk.gray('     Run all e2e tests (after configuring URLs): yarn test:e2e  (or npm run test:e2e)\n'));
 		
 		console.log(chalk.blue('📖 Documentation:'));
 		console.log(chalk.gray('   https://playwright.dev/docs/intro\n'));

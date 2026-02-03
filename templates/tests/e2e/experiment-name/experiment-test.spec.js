@@ -14,7 +14,7 @@ function loadBundle() {
 	return readFileSync(BUNDLE_PATH, 'utf8');
 }
 
-test.describe('Experiment Framework - Basic Test', () => {
+test.describe('Experiment Framework - Experiment Test', () => {
 	let bundleCode;
 
 	test.beforeAll(() => {

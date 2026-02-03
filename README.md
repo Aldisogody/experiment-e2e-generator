@@ -40,7 +40,7 @@ your-project/
 │   ├── e2e/
 │   │   └── your-experiment/
 │   │       ├── your-experiment.spec.js  # Live URL tests (control vs experiment)
-│   │       └── basic-test.spec.js       # Bundle/component test (optional)
+│   │       └── experiment-test.spec.js   # Bundle/component test (optional)
 │   ├── fixtures/
 │   │   └── test-fixtures.js     # Custom test fixtures
 │   └── utils/
@@ -56,7 +56,7 @@ The generator will prompt you for:
 2. **Base URL** - The base URL for tests (e.g., `https://www.samsung.com`)
 3. **Market Code** - Primary market (e.g., `NL`, `BE`, `US`)
 4. **Run ESLint on tests?** - If **No**, the generator adds `tests/` to `.eslintignore` (when that file exists)
-5. **Do you want to run tests now?** - After generation, optionally runs `yarn build` (if a `build` script exists) and `yarn test:e2e` (or npm equivalent)
+5. **Do you want to run tests now?** - After generation, optionally runs `yarn build` (if a `build` script exists) and `yarn test:e2e:experiment` (experiment smoke test only; or npm equivalent)
 
 ### Example Session
 
@@ -83,13 +83,14 @@ Please provide the following information:
   ✓ tests/fixtures/test-fixtures.js
   ✓ tests/utils/test-helpers.js
   ✓ tests/e2e/my-awesome-experiment/my-awesome-experiment.spec.js
-  ✓ tests/e2e/my-awesome-experiment/basic-test.spec.js
+  ✓ tests/e2e/my-awesome-experiment/experiment-test.spec.js
   ✓ Added tests/ to .eslintignore
 
 📦 Updating package.json...
 
   ✓ Added Playwright dependencies to devDependencies
   ✓ Added "test:e2e" script
+  ✓ Added "test:e2e:experiment" script
 
 📥 Installing Playwright...
 
@@ -100,7 +101,7 @@ Please provide the following information:
 Next steps:
   1. Update test URLs in: tests/config/qa-links.config.js
   2. Customize test selectors in: tests/e2e/my-awesome-experiment/...
-  3. Run tests: yarn test:e2e  (or npm run test:e2e)
+  3. Run tests: yarn test:e2e:experiment (experiment smoke) or yarn test:e2e (all e2e, after configuring URLs)
 
 ? Do you want to run tests now? › No
 ```
@@ -143,8 +144,14 @@ const experimentComponent = page.locator('[data-experiment="your-experiment"]');
 
 ### 4. Run Tests
 
+- **`test:e2e:experiment`** – Runs only `experiment-test.spec.js` (bundle smoke test; no URLs required). Use this right after generation or when you only want to verify the built bundle.
+- **`test:e2e`** – Runs all e2e tests (including `your-experiment.spec.js`; requires URLs and selectors configured in `tests/config/qa-links.config.js`).
+
 ```bash
-# Run all tests
+# Run experiment smoke test (bundle only; no URLs)
+yarn test:e2e:experiment
+
+# Run all e2e tests (after configuring URLs)
 yarn test:e2e
 
 # Run in headed mode
@@ -190,7 +197,7 @@ Live-URL test suite with:
 - Uses `tests/config/qa-links.config.js` for control/experiment URLs
 - Proper test structure following best practices
 
-### `tests/e2e/your-experiment/basic-test.spec.js`
+### `tests/e2e/your-experiment/experiment-test.spec.js`
 
 Optional bundle/component test that:
 - Loads your built bundle (e.g. `dist/v1-index.jsx`) and injects it into a blank page
@@ -365,7 +372,7 @@ jobs:
 
 - **Playwright install** – If `package.json` was updated, the generator runs `yarn install` or `npm install` (detected from `yarn.lock` / `package-lock.json`) in your project to install Playwright.
 - **ESLint** – If you chose not to run ESLint on tests and your project has a `.eslintignore` file, the generator appends `tests/` to it.
-- **Run tests now** – You can choose to run `build` (if defined) and `test:e2e` immediately after generation.
+- **Run tests now** – You can choose to run `build` (if defined) and `test:e2e:experiment` (experiment smoke test only) immediately after generation.
 
 ## Package.json Updates
 
@@ -387,7 +394,8 @@ The generator safely updates your `package.json`:
 ```json
 {
   "scripts": {
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:experiment": "playwright test **/experiment-test.spec.js"
   }
 }
 ```

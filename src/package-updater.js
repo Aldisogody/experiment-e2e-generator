@@ -32,11 +32,15 @@ export async function updatePackageJson(targetDir) {
 		changes.push('Added Playwright dependencies to devDependencies');
 	}
 	
-	// Check if test script needs to be added
+	// Check if test scripts need to be added
 	const existingScripts = existingPackageJson.scripts || {};
 	if (!existingScripts['test:e2e']) {
 		additions.scripts['test:e2e'] = 'playwright test';
 		changes.push('Added "test:e2e" script');
+	}
+	if (!existingScripts['test:e2e:experiment']) {
+		additions.scripts['test:e2e:experiment'] = 'playwright test **/experiment-test.spec.js';
+		changes.push('Added "test:e2e:experiment" script');
 	}
 	
 	// Only update if there are changes
@@ -108,7 +112,8 @@ export async function installDependencies(targetDir) {
 }
 
 /**
- * Run build (if script exists) then test:e2e in the target project.
+ * Run build (if script exists) then run experiment e2e test (test:e2e:experiment) or full test:e2e.
+ * Prefers test:e2e:experiment so only experiment-test.spec.js runs; falls back to test:e2e if script missing.
  * @param {string} targetDir - Target project directory
  * @returns {Promise<{success: boolean, exitCode?: number}>}
  */
@@ -131,7 +136,8 @@ export async function runBuildAndTests(targetDir) {
 		}
 	}
 
-	const testResult = spawnSync(runCmd, ['run', 'test:e2e'], {
+	const testScript = scripts['test:e2e:experiment'] ? 'test:e2e:experiment' : 'test:e2e';
+	const testResult = spawnSync(runCmd, ['run', testScript], {
 		cwd: targetDir,
 		stdio: 'inherit',
 		shell: isWindows,

@@ -12,14 +12,14 @@ _(No changes yet.)_
 ## [1.0.5] - 2026-02-03
 
 ### Added
-- `basic-test.spec.js` – Bundle/component test template that loads the built bundle and tests a sample button (visibility, counter, screenshot)
+- `experiment-test.spec.js` – Bundle/component test template that loads the built bundle and tests a sample button (visibility, counter, screenshot)
 - Prompt: "Do you want to run ESLint on tests?" – when No, adds `tests/` to `.eslintignore` if that file exists
 - Optional "Do you want to run tests now?" – runs `build` (if present) then `test:e2e` after generation
 - Automatic Playwright install – after updating package.json, runs `yarn install` or `npm install` in the target project
 - Package manager detection (yarn vs npm) for install and run commands
 
 ### Changed
-- Generated file list now includes `basic-test.spec.js` and optional "Added tests/ to .eslintignore" in CLI output
+- Generated file list now includes `experiment-test.spec.js` and optional "Added tests/ to .eslintignore" in CLI output
 
 ## [1.0.0] - 2026-02-02
 

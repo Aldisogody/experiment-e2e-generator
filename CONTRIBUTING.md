@@ -53,7 +53,7 @@ experiment-e2e-generator/
 │       ├── config/             # index.js, experiment.config.js, qa-links.config.js
 │       ├── e2e/experiment-name/
 │       │   ├── experiment.spec.js   # Live URL control/experiment tests
-│       │   └── basic-test.spec.js   # Bundle/component test
+│       │   └── experiment-test.spec.js   # Bundle/component test
 │       ├── fixtures/test-fixtures.js
 │       └── utils/test-helpers.js
 ├── package.json
@@ -75,7 +75,7 @@ Available template variables:
 - `{{BASE_URL}}` - Base URL for tests
 - `{{MARKET}}` - Market code (uppercase)
 
-Note: `basic-test.spec.js` does not use these variables; it is a static template for bundle/component tests.
+Note: `experiment-test.spec.js` does not use these variables; it is a static template for bundle/component tests.
 
 ### Modifying Prompts
 
