@@ -19,12 +19,6 @@ No installation required! Use `npx` to run directly:
 npx experiment-e2e-generator
 ```
 
-If published under a scope (e.g. `@sogody/experiment-e2e-generator`), use:
-
-```bash
-npx @sogody/experiment-e2e-generator
-```
-
 ### Requirements
 
 - Node.js >= 16.15.1 (18+ recommended for Playwright 1.40+)
@@ -409,7 +403,7 @@ Existing dependencies and scripts are preserved.
 
 ## Support & Contributing
 
-For issues, questions, or contributions, please contact the Sogody team.
+For issues, questions, or contributions, please contact me at [aldikrasniqi5@gmail.com](mailto:aldikrasniqi5@gmail.com)
 
 ## License
 
@@ -417,4 +411,4 @@ MIT
 
 ---
 
-**Made with ❤️ by Sogody**
+**Made with ❤️ by Aldi **
