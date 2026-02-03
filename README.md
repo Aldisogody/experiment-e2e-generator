@@ -19,9 +19,15 @@ No installation required! Use `npx` to run directly:
 npx experiment-e2e-generator
 ```
 
+If published under a scope (e.g. `@sogody/experiment-e2e-generator`), use:
+
+```bash
+npx @sogody/experiment-e2e-generator
+```
+
 ### Requirements
 
-- Node.js >= 18 (required by Playwright 1.40+)
+- Node.js >= 16.15.1 (18+ recommended for Playwright 1.40+)
 - Existing `package.json` in project root
 - Project must be an Experiment Framework project
 
@@ -39,7 +45,8 @@ your-project/
 │   │   └── qa-links.config.js   # Test URLs (control & experiment)
 │   ├── e2e/
 │   │   └── your-experiment/
-│   │       └── your-experiment.spec.js  # Sample test suite
+│   │       ├── your-experiment.spec.js  # Live URL tests (control vs experiment)
+│   │       └── basic-test.spec.js       # Bundle/component test (optional)
 │   ├── fixtures/
 │   │   └── test-fixtures.js     # Custom test fixtures
 │   └── utils/
@@ -51,14 +58,16 @@ your-project/
 
 The generator will prompt you for:
 
-1. **Experiment Name** - Your experiment's name (auto-detected if possible)
+1. **Experiment Name** - Your experiment's name (auto-detected from `package.json` or `src/components` if possible)
 2. **Base URL** - The base URL for tests (e.g., `https://www.samsung.com`)
 3. **Market Code** - Primary market (e.g., `NL`, `BE`, `US`)
+4. **Run ESLint on tests?** - If **No**, the generator adds `tests/` to `.eslintignore` (when that file exists)
+5. **Do you want to run tests now?** - After generation, optionally runs `yarn build` (if a `build` script exists) and `yarn test:e2e` (or npm equivalent)
 
 ### Example Session
 
 ```bash
-$ npx @sogody/experiment-e2e-generator
+$ npx experiment-e2e-generator
 
 🎭 Experiment E2E Test Generator
 
@@ -69,6 +78,7 @@ Please provide the following information:
 ? What is your experiment name? › My Awesome Experiment
 ? Base URL for tests › https://www.samsung.com
 ? Primary market code › NL
+? Do you want to run ESLint on tests? › No
 
 📁 Generating test files...
 
@@ -79,13 +89,26 @@ Please provide the following information:
   ✓ tests/fixtures/test-fixtures.js
   ✓ tests/utils/test-helpers.js
   ✓ tests/e2e/my-awesome-experiment/my-awesome-experiment.spec.js
+  ✓ tests/e2e/my-awesome-experiment/basic-test.spec.js
+  ✓ Added tests/ to .eslintignore
 
 📦 Updating package.json...
 
   ✓ Added Playwright dependencies to devDependencies
   ✓ Added "test:e2e" script
 
+📥 Installing Playwright...
+
+  ✓ Playwright installed
+
 ✓ Test structure generated successfully!
+
+Next steps:
+  1. Update test URLs in: tests/config/qa-links.config.js
+  2. Customize test selectors in: tests/e2e/my-awesome-experiment/...
+  3. Run tests: yarn test:e2e  (or npm run test:e2e)
+
+? Do you want to run tests now? › No
 ```
 
 ## After Generation
@@ -167,10 +190,19 @@ Test URL management:
 
 ### `tests/e2e/your-experiment/your-experiment.spec.js`
 
-Sample test suite with:
-- **Control tests** - Verify experiment doesn't appear
-- **Experiment tests** - Verify experiment appears and functions
+Live-URL test suite with:
+- **Control tests** - Verify experiment doesn't appear on control URL
+- **Experiment tests** - Verify experiment appears and functions on experiment URL
+- Uses `tests/config/qa-links.config.js` for control/experiment URLs
 - Proper test structure following best practices
+
+### `tests/e2e/your-experiment/basic-test.spec.js`
+
+Optional bundle/component test that:
+- Loads your built bundle (e.g. `dist/v1-index.jsx`) and injects it into a blank page
+- Tests a sample button component (visibility, label, counter, screenshot)
+- Requires `yarn build` (or equivalent) before running e2e
+- Customize selectors and bundle path for your experiment
 
 ### `tests/fixtures/test-fixtures.js`
 
@@ -276,7 +308,7 @@ The generator must be run from your project root where `package.json` exists. Na
 
 ```bash
 cd your-project
-npx @sogody/experiment-e2e-generator
+npx experiment-e2e-generator
 ```
 
 ### Playwright installation fails
@@ -334,6 +366,12 @@ jobs:
           CONTROL_URL: ${{ secrets.CONTROL_URL }}
           EXPERIMENT_URL: ${{ secrets.EXPERIMENT_URL }}
 ```
+
+## Post-Generation Behavior
+
+- **Playwright install** – If `package.json` was updated, the generator runs `yarn install` or `npm install` (detected from `yarn.lock` / `package-lock.json`) in your project to install Playwright.
+- **ESLint** – If you chose not to run ESLint on tests and your project has a `.eslintignore` file, the generator appends `tests/` to it.
+- **Run tests now** – You can choose to run `build` (if defined) and `test:e2e` immediately after generation.
 
 ## Package.json Updates
 

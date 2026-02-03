@@ -26,7 +26,7 @@ After linking, you can test the generator in any project:
 
 ```bash
 cd /path/to/test-project
-npx @sogody/experiment-e2e-generator
+npx experiment-e2e-generator
 ```
 
 Or use the linked version:
@@ -42,14 +42,20 @@ experiment-e2e-generator/
 ├── bin/
 │   └── cli.js                  # CLI entry point
 ├── src/
-│   ├── generator.js            # Main orchestration
-│   ├── prompts.js              # User input handling
-│   ├── file-operations.js      # File generation
-│   ├── package-updater.js      # package.json management
-│   └── utils.js                # Helper functions
-├── templates/                  # Template files
+│   ├── generator.js            # Main orchestration (pre-flight, prompts, generate, package update, install, optional run tests)
+│   ├── prompts.js              # User input (experiment name, base URL, market, run ESLint on tests)
+│   ├── file-operations.js      # Template copy + variable replacement, tests dir check, getGeneratedFilesList, addTestsToEslintIgnore
+│   ├── package-updater.js      # package.json merge, isPlaywrightInstalled, detectPackageManager, installDependencies, runBuildAndTests
+│   └── utils.js                # toKebabCase, replaceTemplateVars, pathExists, mergePackageJson, detectExperimentName, validateProjectDirectory, copyTemplateFile
+├── templates/
 │   ├── playwright.config.js
 │   └── tests/
+│       ├── config/             # index.js, experiment.config.js, qa-links.config.js
+│       ├── e2e/experiment-name/
+│       │   ├── experiment.spec.js   # Live URL control/experiment tests
+│       │   └── basic-test.spec.js   # Bundle/component test
+│       ├── fixtures/test-fixtures.js
+│       └── utils/test-helpers.js
 ├── package.json
 └── README.md
 ```
@@ -59,8 +65,8 @@ experiment-e2e-generator/
 ### Adding New Templates
 
 1. Create the template file in `templates/` directory
-2. Use `{{VARIABLE_NAME}}` for placeholders
-3. Update `file-operations.js` to include the new template
+2. Use `{{VARIABLE_NAME}}` for placeholders (where applicable)
+3. Add the mapping in `file-operations.js` (in `fileMappings` and in `getGeneratedFilesList` if it should be listed in the CLI output)
 4. Update `README.md` with information about the new file
 
 Available template variables:
@@ -68,6 +74,8 @@ Available template variables:
 - `{{EXPERIMENT_NAME_KEBAB}}` - Kebab-case version
 - `{{BASE_URL}}` - Base URL for tests
 - `{{MARKET}}` - Market code (uppercase)
+
+Note: `basic-test.spec.js` does not use these variables; it is a static template for bundle/component tests.
 
 ### Modifying Prompts
 
@@ -114,6 +122,8 @@ Before submitting a pull request:
    - Playwright already installed
    - Special characters in experiment name
    - Canceling prompts mid-flow
+   - ESLint on tests: Yes vs No (check .eslintignore when it exists)
+   - "Do you want to run tests now?" (build + test:e2e when applicable)
 
 4. Run generated tests:
    ```bash

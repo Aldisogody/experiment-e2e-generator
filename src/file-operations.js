@@ -45,6 +45,10 @@ export async function generateTestFiles(targetDir, config) {
 			'tests/e2e/experiment-name/experiment.spec.js',
 			`tests/e2e/${experimentNameKebab}/${experimentNameKebab}.spec.js`,
 		],
+		[
+			'tests/e2e/experiment-name/basic-test.spec.js',
+			`tests/e2e/${experimentNameKebab}/basic-test.spec.js`,
+		],
 	];
 	
 	// Copy and process each template file
@@ -87,6 +91,7 @@ export function getGeneratedFilesList(experimentName) {
 		'tests/fixtures/test-fixtures.js',
 		'tests/utils/test-helpers.js',
 		`tests/e2e/${experimentNameKebab}/${experimentNameKebab}.spec.js`,
+		`tests/e2e/${experimentNameKebab}/basic-test.spec.js`,
 	];
 }
 

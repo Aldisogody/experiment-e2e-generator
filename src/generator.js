@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { validateProjectDirectory, pathExists } from './utils.js';
 import { getUserInput, confirmAction } from './prompts.js';
 import { generateTestFiles, testsDirectoryExists, getGeneratedFilesList, addTestsToEslintIgnore } from './file-operations.js';
-import { updatePackageJson, isPlaywrightInstalled, installDependencies } from './package-updater.js';
+import { updatePackageJson, isPlaywrightInstalled, installDependencies, runBuildAndTests } from './package-updater.js';
 
 /**
  * Main generator function
@@ -111,6 +111,16 @@ export async function generator() {
 		
 		console.log(chalk.blue('📖 Documentation:'));
 		console.log(chalk.gray('   https://playwright.dev/docs/intro\n'));
+
+		const runTestsNow = await confirmAction('Do you want to run tests now?');
+		if (runTestsNow) {
+			console.log(chalk.blue('\n🔧 Running build and tests...\n'));
+			const runResult = await runBuildAndTests(cwd);
+			if (!runResult.success) {
+				process.exit(runResult.exitCode ?? 1);
+			}
+			console.log(chalk.green('\n✓ Build and tests completed.\n'));
+		}
 		
 	} catch (error) {
 		console.error(chalk.red('\n✗ Error generating test files:\n'));

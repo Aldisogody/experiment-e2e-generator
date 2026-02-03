@@ -106,3 +106,38 @@ export async function installDependencies(targetDir) {
 	}
 	return { success: true };
 }
+
+/**
+ * Run build (if script exists) then test:e2e in the target project.
+ * @param {string} targetDir - Target project directory
+ * @returns {Promise<{success: boolean, exitCode?: number}>}
+ */
+export async function runBuildAndTests(targetDir) {
+	const packageJsonPath = path.join(targetDir, 'package.json');
+	const packageJson = await fs.readJson(packageJsonPath);
+	const scripts = packageJson.scripts || {};
+	const packageManager = await detectPackageManager(targetDir);
+	const isWindows = process.platform === 'win32';
+	const runCmd = packageManager === 'yarn' ? 'yarn' : 'npm';
+
+	if (scripts.build) {
+		const buildResult = spawnSync(runCmd, ['run', 'build'], {
+			cwd: targetDir,
+			stdio: 'inherit',
+			shell: isWindows,
+		});
+		if (buildResult.status !== 0) {
+			return { success: false, exitCode: buildResult.status };
+		}
+	}
+
+	const testResult = spawnSync(runCmd, ['run', 'test:e2e'], {
+		cwd: targetDir,
+		stdio: 'inherit',
+		shell: isWindows,
+	});
+	if (testResult.status !== 0) {
+		return { success: false, exitCode: testResult.status };
+	}
+	return { success: true };
+}
