@@ -395,7 +395,7 @@ The generator safely updates your `package.json`:
 {
   "scripts": {
     "test:e2e": "playwright test",
-    "test:e2e:experiment": "playwright test **/experiment-test.spec.js"
+    "test:e2e:experiment": "playwright test tests/e2e/*/experiment-test.spec.js"
   }
 }
 ```

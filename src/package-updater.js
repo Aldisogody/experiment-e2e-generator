@@ -39,7 +39,7 @@ export async function updatePackageJson(targetDir) {
 		changes.push('Added "test:e2e" script');
 	}
 	if (!existingScripts['test:e2e:experiment']) {
-		additions.scripts['test:e2e:experiment'] = 'playwright test **/experiment-test.spec.js';
+		additions.scripts['test:e2e:experiment'] = 'playwright test tests/e2e/*/experiment-test.spec.js';
 		changes.push('Added "test:e2e:experiment" script');
 	}
 	
