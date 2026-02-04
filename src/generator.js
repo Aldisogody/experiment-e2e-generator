@@ -2,7 +2,7 @@ import path from 'path';
 import chalk from 'chalk';
 import { validateProjectDirectory, pathExists } from './utils.js';
 import { getUserInput, confirmAction } from './prompts.js';
-import { generateTestFiles, testsDirectoryExists, getGeneratedFilesList, addTestsToEslintIgnore } from './file-operations.js';
+import { generateTestFiles, testsDirectoryExists, getGeneratedFilesList, addTestsToEslintIgnore, addTestOutputDirsToGitignore } from './file-operations.js';
 import { updatePackageJson, isPlaywrightInstalled, installDependencies, runBuildAndTests } from './package-updater.js';
 
 /**
@@ -62,6 +62,11 @@ export async function generator() {
 			if (eslintResult.updated) {
 				console.log(chalk.green('  ✓ Added tests/ to .eslintignore'));
 			}
+		}
+
+		const gitignoreResult = await addTestOutputDirsToGitignore(cwd);
+		if (gitignoreResult.updated) {
+			console.log(chalk.green('  ✓ Added test output dirs to .gitignore'));
 		}
 		
 		// Step 4: Update package.json

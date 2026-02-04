@@ -125,3 +125,50 @@ export async function addTestsToEslintIgnore(targetDir) {
 
 	return { updated: true };
 }
+
+/** Entries to add to .gitignore (test output, local only) */
+const GITIGNORE_TEST_OUTPUT_ENTRIES = ['playwright-report/', 'coverage/', 'test-results/'];
+
+/** Variants that count as "already present" for each entry */
+const GITIGNORE_ENTRY_VARIANTS = [
+	['playwright-report', 'playwright-report/'],
+	['coverage', 'coverage/'],
+	['test-results', 'test-results/'],
+];
+
+/**
+ * Add test output directories to .gitignore so reports stay local.
+ * Creates .gitignore if missing; otherwise appends only missing entries.
+ * @param {string} targetDir - Target project directory
+ * @returns {Promise<{updated: boolean}>} - Whether the file was created or updated
+ */
+export async function addTestOutputDirsToGitignore(targetDir) {
+	const gitignorePath = path.join(targetDir, '.gitignore');
+
+	if (!(await fs.pathExists(gitignorePath))) {
+		const content = [
+			'# Test output (local only)',
+			...GITIGNORE_TEST_OUTPUT_ENTRIES,
+			'',
+		].join('\n');
+		await fs.writeFile(gitignorePath, content, 'utf-8');
+		return { updated: true };
+	}
+
+	const content = await fs.readFile(gitignorePath, 'utf-8');
+	const lines = content.split(/\r?\n/).map((line) => line.trim());
+
+	const hasEntry = (variants) => lines.some((line) => variants.includes(line));
+
+	const toAdd = GITIGNORE_TEST_OUTPUT_ENTRIES.filter((entry, i) => !hasEntry(GITIGNORE_ENTRY_VARIANTS[i]));
+
+	if (toAdd.length === 0) {
+		return { updated: false };
+	}
+
+	const suffix = content.endsWith('\n') ? '' : '\n';
+	const block = suffix + '\n# Test output (local only)\n' + toAdd.join('\n') + '\n';
+	await fs.writeFile(gitignorePath, content + block, 'utf-8');
+
+	return { updated: true };
+}
