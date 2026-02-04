@@ -4,7 +4,8 @@
  */
 export const experimentConfig = {
 	name: '{{EXPERIMENT_NAME}}',
-	market: '{{MARKET}}',
+	marketGroup: '{{MARKET_GROUP}}',
+	markets: '{{MARKETS_JSON}}',
 	baseUrl: '{{BASE_URL}}',
 	
 	// Experiment variants
@@ -25,4 +26,12 @@ export const experimentConfig = {
 	
 	// Adobe Target preview token (if applicable)
 	adobePreviewToken: process.env.ADOBE_PREVIEW_TOKEN || '',
+
+	getMarketCodes() {
+		return this.markets.map((m) => m.code);
+	},
+
+	getMarket(code) {
+		return this.markets.find((m) => m.code === code);
+	},
 };

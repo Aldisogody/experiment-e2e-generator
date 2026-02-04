@@ -1,5 +1,6 @@
 import prompts from 'prompts';
 import { detectExperimentName } from './utils.js';
+import { getMarketChoices, resolveMarkets, formatMarketCodes } from './markets.js';
 
 /**
  * Get user input through interactive prompts
@@ -41,25 +42,33 @@ export async function getUserInput(cwd) {
 			},
 		},
 		{
-			type: 'text',
+			type: 'autocomplete',
 			name: 'market',
-			message: 'Primary market code (e.g., NL, BE)',
-			initial: 'NL',
-			validate: (value) => {
-				if (!value.trim()) {
-					return 'Market code is required';
+			message: 'Select market or market group (type to search, or enter custom code)',
+			choices: getMarketChoices(),
+			suggest: (input, choices) => {
+				const inputLower = input.toLowerCase();
+				return choices.filter(
+					(choice) =>
+						choice.title.toLowerCase().includes(inputLower) ||
+						choice.value.toLowerCase().includes(inputLower)
+				);
+			},
+			fallback: (input) => {
+				// Allow custom market codes that aren't in the predefined list
+				if (input && input.trim()) {
+					return { title: input.toUpperCase(), value: input.toUpperCase() };
 				}
-				if (value.length > 5) {
-					return 'Market code should be short (e.g., NL, BE, UK)';
-				}
-				return true;
+				return null;
 			},
 		},
 		{
-			type: 'confirm',
+			type: 'toggle',
 			name: 'runEslintOnTests',
-			message: 'Do you want to run ESLint on tests? (This will add tests/ to .eslintignore)',
+			message: 'Run ESLint on tests?',
 			initial: false,
+			active: 'Yes',
+			inactive: 'No (add to .eslintignore)',
 		},
 	];
 	
@@ -69,6 +78,18 @@ export async function getUserInput(cwd) {
 			process.exit(0);
 		},
 	});
+
+	// Resolve market selection to market group and countries array
+	if (response.market) {
+		const { marketGroup, markets } = resolveMarkets(response.market);
+		response.marketGroup = marketGroup;
+		response.markets = markets;
+
+		// Display resolved markets for user confirmation
+		if (markets.length > 1) {
+			console.log(`\n  Selected markets: ${formatMarketCodes(markets)}`);
+		}
+	}
 	
 	return response;
 }
@@ -76,17 +97,20 @@ export async function getUserInput(cwd) {
 /**
  * Ask user for confirmation before overwriting
  * @param {string} message - Confirmation message
+ * @param {boolean} initialValue - Default value (default: true)
  * @returns {Promise<boolean>}
  */
-export async function confirmAction(message) {
+export async function confirmAction(message, initialValue = true) {
 	const response = await prompts({
-		type: 'confirm',
+		type: 'toggle',
 		name: 'value',
 		message,
-		initial: true,
+		initial: initialValue,
+		active: 'Yes',
+		inactive: 'No',
 	}, {
 		onCancel: () => {
-			return false;
+			return { value: false };
 		},
 	});
 	

@@ -4,6 +4,7 @@ import { validateProjectDirectory, pathExists } from './utils.js';
 import { getUserInput, confirmAction } from './prompts.js';
 import { generateTestFiles, testsDirectoryExists, getGeneratedFilesList, addTestsToEslintIgnore, addTestOutputDirsToGitignore } from './file-operations.js';
 import { updatePackageJson, isPlaywrightInstalled, installDependencies, runBuildAndTests } from './package-updater.js';
+import { formatMarketCodes } from './markets.js';
 
 /**
  * Main generator function
@@ -45,6 +46,13 @@ export async function generator() {
 	// Step 2: Get user input
 	console.log(chalk.blue('\nPlease provide the following information:\n'));
 	const config = await getUserInput(cwd);
+	
+	// Display configuration summary
+	console.log(chalk.blue('\n📋 Configuration summary:'));
+	console.log(chalk.gray(`   Experiment: ${config.experimentName}`));
+	console.log(chalk.gray(`   Base URL: ${config.baseUrl}`));
+	console.log(chalk.gray(`   Market Group: ${config.marketGroup}`));
+	console.log(chalk.gray(`   Markets: ${formatMarketCodes(config.markets)}`));
 	
 	// Step 3: Generate files
 	console.log(chalk.blue('\n📁 Generating test files...\n'));
@@ -106,7 +114,13 @@ export async function generator() {
 			step++;
 		}
 		console.log(chalk.white(`  ${step}. Update test URLs in:`));
-		console.log(chalk.gray('     tests/config/qa-links.config.js\n'));
+		console.log(chalk.gray('     tests/config/qa-links.config.js'));
+		if (config.markets && config.markets.length > 1) {
+			console.log(chalk.gray(`     Configure URLs for each market: ${formatMarketCodes(config.markets)}`));
+			console.log(chalk.gray('     Or use environment variables: CONTROL_URL_<MARKET>, EXPERIMENT_URL_<MARKET>\n'));
+		} else {
+			console.log('');
+		}
 		step++;
 		console.log(chalk.white(`  ${step}. Customize test selectors in:`));
 		console.log(chalk.gray(`     tests/e2e/${config.experimentName.toLowerCase().replace(/\s+/g, '-')}/${config.experimentName.toLowerCase().replace(/\s+/g, '-')}.spec.js\n`));
