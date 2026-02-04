@@ -58,7 +58,7 @@ export async function getUserInput(cwd) {
 		{
 			type: 'confirm',
 			name: 'runEslintOnTests',
-			message: 'Do you want to run ESLint on tests?',
+			message: 'Do you want to run ESLint on tests? (This will add tests/ to .eslintignore)',
 			initial: false,
 		},
 	];
@@ -83,7 +83,7 @@ export async function confirmAction(message) {
 		type: 'confirm',
 		name: 'value',
 		message,
-		initial: false,
+		initial: true,
 	}, {
 		onCancel: () => {
 			return false;
