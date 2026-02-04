@@ -13,7 +13,7 @@ const TEMPLATES_DIR = path.join(__dirname, '..', 'templates');
  * @param {Object} config - Configuration object with user inputs
  */
 export async function generateTestFiles(targetDir, config) {
-	const { experimentName, baseUrl, market } = config;
+	const { experimentName, baseUrl, marketGroup, markets } = config;
 	const experimentNameKebab = toKebabCase(experimentName);
 	
 	// Template variables
@@ -21,7 +21,8 @@ export async function generateTestFiles(targetDir, config) {
 		EXPERIMENT_NAME: experimentName,
 		EXPERIMENT_NAME_KEBAB: experimentNameKebab,
 		BASE_URL: baseUrl,
-		MARKET: market.toUpperCase(),
+		MARKET_GROUP: marketGroup,
+		MARKETS_JSON: JSON.stringify(markets, null, '\t'),
 	};
 	
 	// Define file mappings: [source, destination]
