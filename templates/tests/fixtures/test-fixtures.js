@@ -13,7 +13,7 @@ export const test = base.extend({
 	experimentContext: async ({}, use) => {
 		const context = {
 			name: experimentConfig.name,
-			market: experimentConfig.market,
+			marketGroup: experimentConfig.marketGroup,
 			baseUrl: experimentConfig.baseUrl,
 			
 			/**

@@ -5,8 +5,8 @@
 export const experimentConfig = {
 	name: '{{EXPERIMENT_NAME}}',
 	marketGroup: '{{MARKET_GROUP}}',
-	markets: '{{MARKETS_JSON}}',
-	baseUrl: '{{BASE_URL}}',
+	markets: JSON.parse('{{MARKETS_JSON}}'),
+	baseUrl: '{{BASE_URL}}',	
 	
 	// Experiment variants
 	variants: {
