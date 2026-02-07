@@ -22,7 +22,7 @@ Sweden - https://www.samsung.com/se/
 
 Norway - https://www.samsung.com/no/
 
-Denmark - https://www.samsung.com/de/
+Denmark - https://www.samsung.com/dk/
 
 Finland - https://www.samsung.com/fi/
 

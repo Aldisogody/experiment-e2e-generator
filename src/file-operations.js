@@ -22,7 +22,7 @@ export async function generateTestFiles(targetDir, config) {
 		EXPERIMENT_NAME_KEBAB: experimentNameKebab,
 		BASE_URL: baseUrl,
 		MARKET_GROUP: marketGroup,
-		MARKETS_JSON: JSON.stringify(markets, null, '\t'),
+		MARKETS_JSON: JSON.stringify(markets),
 	};
 	
 	// Define file mappings: [source, destination]

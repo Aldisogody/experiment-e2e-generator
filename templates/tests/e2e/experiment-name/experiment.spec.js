@@ -4,7 +4,8 @@ import { qaLinksConfig, validateUrls } from '../../config/index.js';
 test.describe('{{EXPERIMENT_NAME}} - Control', () => {
 	test.beforeEach(async ({ page }) => {
 		validateUrls();
-		await page.goto(qaLinksConfig.controlUrl);
+		const { controlUrl } = qaLinksConfig.getUrls(qaLinksConfig.markets[0].code);
+		await page.goto(controlUrl);
 	});
 
 	test('should not display experiment component', async ({ page }) => {
@@ -25,7 +26,8 @@ test.describe('{{EXPERIMENT_NAME}} - Control', () => {
 test.describe('{{EXPERIMENT_NAME}} - Experiment', () => {
 	test.beforeEach(async ({ page }) => {
 		validateUrls();
-		await page.goto(qaLinksConfig.experimentUrl);
+		const { experimentUrl } = qaLinksConfig.getUrls(qaLinksConfig.markets[0].code);
+		await page.goto(experimentUrl);
 	});
 
 	test('should display experiment component', async ({ page }) => {

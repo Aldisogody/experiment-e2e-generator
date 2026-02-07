@@ -4,7 +4,7 @@
  */
 export const qaLinksConfig = {
 	baseUrl: '{{BASE_URL}}',
-	markets: '{{MARKETS_JSON}}',
+	markets: JSON.parse('{{MARKETS_JSON}}'),
 
 	/**
 	 * Get URLs for a specific market
@@ -52,22 +52,21 @@ export const qaLinksConfig = {
  * @throws {Error} if required URLs are missing
  */
 export function validateUrls() {
-	const missingUrls = [];
+	const missingEnvVars = [];
 
 	for (const market of qaLinksConfig.markets) {
-		const urls = qaLinksConfig.getUrls(market.code);
-		if (!urls.controlUrl) {
-			missingUrls.push(`CONTROL_URL_${market.code}`);
+		if (!process.env[`CONTROL_URL_${market.code}`]) {
+			missingEnvVars.push(`CONTROL_URL_${market.code}`);
 		}
-		if (!urls.experimentUrl) {
-			missingUrls.push(`EXPERIMENT_URL_${market.code}`);
+		if (!process.env[`EXPERIMENT_URL_${market.code}`]) {
+			missingEnvVars.push(`EXPERIMENT_URL_${market.code}`);
 		}
 	}
 
-	if (missingUrls.length > 0) {
-		throw new Error(
-			`Missing required URLs. Please set the following environment variables ` +
-				`or update the URLs in tests/config/qa-links.config.js:\n${missingUrls.join(', ')}`
+	if (missingEnvVars.length > 0) {
+		console.warn(
+			`Warning: The following environment variables are not set. ` +
+				`Falling back to default URL patterns:\n${missingEnvVars.join(', ')}`
 		);
 	}
 }
