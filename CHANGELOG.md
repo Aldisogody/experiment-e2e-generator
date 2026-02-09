@@ -7,56 +7,84 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_(No changes yet.)_
+### Fixed
+- Removed unnecessary JSON parsing in multi-market templates
+- Resolved multi-market template bugs and broken API references in generated files
+
+## [1.0.11] - 2026-02-04
+
+### Added
+- Multi-market support: select a market group (e.g., SEBN) and automatically generate config for all its countries (BE, BE_FR, NL)
+- `markets.js` module with `MARKET_GROUPS` constant, `resolveMarkets()`, `getMarketChoices()`, and `formatMarketCodes()`
+- Autocomplete market selection prompt with 30+ Samsung markets
+- Automatic `.gitignore` updates for test output directories (`playwright-report/`, `coverage/`, `test-results/`)
+- New template variables: `{{MARKET_GROUP}}` and `{{MARKETS_JSON}}`
+
+### Changed
+- `qa-links.config.js` template now uses per-market URL resolution with `getUrls(marketCode)` and `getAllUrls()` methods
+- `experiment.config.js` template now includes full market array and market group code
+- Market prompt changed from free-text input to searchable autocomplete
+
+### Fixed
+- `confirmAction` prompt now defaults to `true` for better user experience
+
+## [1.0.9] - 2026-02-03
+
+### Fixed
+- Corrected `test:e2e:experiment` script path in `package-updater.js` to use `tests/e2e/*/experiment-test.spec.js`
+
+## [1.0.8] - 2026-02-03
+
+### Changed
+- Updated CHANGELOG, README, and CONTRIBUTING documentation for v1.0.6 features
+
+## [1.0.7] - 2026-02-03
+
+### Changed
+- Updated contact information and author attribution in README
+
+## [1.0.6] - 2026-02-03
+
+### Changed
+- Updated CHANGELOG, README, and CONTRIBUTING documentation for v1.0.5 features
 
 ## [1.0.5] - 2026-02-03
 
 ### Added
-- `experiment-test.spec.js` – Bundle/component test template that loads the built bundle and tests a sample button (visibility, counter, screenshot)
-- Prompt: "Do you want to run ESLint on tests?" – when No, adds `tests/` to `.eslintignore` if that file exists
-- Optional "Do you want to run tests now?" – runs `build` (if present) then `test:e2e` after generation
-- Automatic Playwright install – after updating package.json, runs `yarn install` or `npm install` in the target project
+- `experiment-test.spec.js` - Bundle/component test template that loads the built bundle and tests it on a blank page
+- Prompt: "Do you want to run ESLint on tests?" - when No, adds `tests/` to `.eslintignore` if that file exists
+- Optional "Do you want to run tests now?" - runs `build` (if present) then `test:e2e:experiment` after generation
+- Automatic Playwright install - after updating package.json, runs `yarn install` or `npm install` in the target project
 - Package manager detection (yarn vs npm) for install and run commands
-
-### Changed
-- Generated file list now includes `experiment-test.spec.js` and optional "Added tests/ to .eslintignore" in CLI output
 
 ## [1.0.0] - 2026-02-02
 
 ### Added
 - Initial release of experiment-e2e-generator
 - Interactive CLI for generating Playwright E2E test infrastructure
-- Complete template system with placeholder replacement
+- Complete template system with `{{VARIABLE}}` placeholder replacement
 - Auto-detection of experiment names from project structure (`package.json` name or first `src/components` entry)
 - Safe package.json updating (preserves existing configuration)
-- Generated test structure includes:
-  - `playwright.config.js` - Multi-browser configuration
-  - `tests/config/` - Experiment and URL configuration files
-  - `tests/e2e/<experiment>/` - `experiment.spec.js` (live URL control/experiment tests)
-  - `tests/fixtures/` - Custom Playwright fixtures
-  - `tests/utils/` - Reusable helper functions
+- Generated test structure: `playwright.config.js`, `tests/config/`, `tests/e2e/`, `tests/fixtures/`, `tests/utils/`
 - Pre-flight validation checks
 - Warning system for existing test directories
-- Comprehensive documentation and examples
-- Support for environment variables (CONTROL_URL, EXPERIMENT_URL, etc.)
-- Adobe Target preview token integration
-- Organized folder structure following best practices
+- Support for environment variables (CONTROL_URL, EXPERIMENT_URL, ADOBE_PREVIEW_TOKEN)
 
 ### Template Variables
 - `{{EXPERIMENT_NAME}}` - Original experiment name
 - `{{EXPERIMENT_NAME_KEBAB}}` - Kebab-case formatted name
 - `{{BASE_URL}}` - Base URL for tests
-- `{{MARKET}}` - Market code (uppercase)
 
 ### Dependencies
 - chalk ^5.6.2 - Terminal styling
 - fs-extra ^11.3.3 - File system utilities
 - prompts ^2.4.2 - Interactive CLI prompts
 
-### Requirements
-- Node.js >= 16.15.1
-- Existing package.json in project root
-
-[Unreleased]: https://github.com/sogody/experiment-e2e-generator/compare/v1.0.5...HEAD
-[1.0.5]: https://github.com/sogody/experiment-e2e-generator/releases/tag/v1.0.5
-[1.0.0]: https://github.com/sogody/experiment-e2e-generator/releases/tag/v1.0.0
+[Unreleased]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.11...HEAD
+[1.0.11]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.9...v1.0.11
+[1.0.9]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.8...v1.0.9
+[1.0.8]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.7...v1.0.8
+[1.0.7]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.6...v1.0.7
+[1.0.6]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.5...v1.0.6
+[1.0.5]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.0...v1.0.5
+[1.0.0]: https://github.com/Aldisogody/experiment-e2e-generator/releases/tag/v1.0.0

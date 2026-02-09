@@ -43,9 +43,10 @@ experiment-e2e-generator/
 │   └── cli.js                  # CLI entry point
 ├── src/
 │   ├── generator.js            # Main orchestration (pre-flight, prompts, generate, package update, install, optional run tests)
-│   ├── prompts.js              # User input (experiment name, base URL, market, run ESLint on tests)
-│   ├── file-operations.js      # Template copy + variable replacement, tests dir check, getGeneratedFilesList, addTestsToEslintIgnore
+│   ├── prompts.js              # User input (experiment name, base URL, market autocomplete, ESLint preference)
+│   ├── file-operations.js      # Template copy + variable replacement, tests dir check, getGeneratedFilesList, eslintignore/gitignore updates
 │   ├── package-updater.js      # package.json merge, isPlaywrightInstalled, detectPackageManager, installDependencies, runBuildAndTests
+│   ├── markets.js              # MARKET_GROUPS constant (30+ markets), resolveMarkets(), getMarketChoices(), formatMarketCodes()
 │   └── utils.js                # toKebabCase, replaceTemplateVars, pathExists, mergePackageJson, detectExperimentName, validateProjectDirectory, copyTemplateFile
 ├── templates/
 │   ├── playwright.config.js
@@ -73,9 +74,8 @@ Available template variables:
 - `{{EXPERIMENT_NAME}}` - Original experiment name
 - `{{EXPERIMENT_NAME_KEBAB}}` - Kebab-case version
 - `{{BASE_URL}}` - Base URL for tests
-- `{{MARKET}}` - Market code (uppercase)
-
-Note: `experiment-test.spec.js` does not use these variables; it is a static template for bundle/component tests.
+- `{{MARKET_GROUP}}` - Market group code (e.g., SEBN, SEUK)
+- `{{MARKETS_JSON}}` - JSON array of market objects (e.g., `[{"code":"NL","urlPath":"nl","name":"Netherlands"}]`)
 
 ### Modifying Prompts
 
@@ -87,10 +87,16 @@ Edit `src/prompts.js` to add or modify user prompts. Each prompt should:
 ### Updating Dependencies
 
 When updating Playwright or other dependencies:
-1. Update version in `src/package-updater.js`
-2. Update version in `package.json`
-3. Test with multiple project types
-4. Update documentation if needed
+1. Update the pinned version in `src/package-updater.js` (`updatePackageJson` function)
+2. Test with a fresh project to ensure install works
+3. Update documentation if needed
+
+### Adding Markets
+
+Edit `src/markets.js`:
+1. Add the new entry to `MARKET_GROUPS` (multi-country group or single-country)
+2. Multi-country groups: include all countries in the `countries` array
+3. Update `getMarketChoices()` if the market needs specific ordering in the prompt
 
 ## Code Style
 
@@ -118,12 +124,15 @@ Before submitting a pull request:
    - package.json updated properly
 
 3. Test with edge cases:
-   - Existing tests directory
-   - Playwright already installed
-   - Special characters in experiment name
-   - Canceling prompts mid-flow
-   - ESLint on tests: Yes vs No (check .eslintignore when it exists)
-   - "Do you want to run tests now?" (build + test:e2e when applicable)
+   - Existing tests directory (should warn and ask confirmation)
+   - Playwright already installed (should skip dependency additions)
+   - Special characters in experiment name (kebab-case conversion)
+   - Canceling prompts mid-flow (Ctrl+C graceful exit)
+   - ESLint on tests: Yes vs No (check `.eslintignore` when it exists)
+   - Multi-market group selection (e.g., SEBN should expand to BE, BE_FR, NL)
+   - Single market selection (e.g., NL should resolve to SEBN group)
+   - Custom/unknown market code (should create a custom market entry)
+   - "Do you want to run tests now?" (build + test:e2e:experiment)
 
 4. Run generated tests:
    ```bash
