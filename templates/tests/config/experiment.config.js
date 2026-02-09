@@ -5,7 +5,7 @@
 export const experimentConfig = {
 	name: '{{EXPERIMENT_NAME}}',
 	marketGroup: '{{MARKET_GROUP}}',
-	markets: JSON.parse('{{MARKETS_JSON}}'),
+	markets: {{MARKETS_JSON}},
 	baseUrl: '{{BASE_URL}}',	
 	
 	// Experiment variants
