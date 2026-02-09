@@ -4,7 +4,7 @@
  */
 export const qaLinksConfig = {
 	baseUrl: '{{BASE_URL}}',
-	markets: JSON.parse('{{MARKETS_JSON}}'),
+	markets: {{MARKETS_JSON}},
 
 	/**
 	 * Get URLs for a specific market
