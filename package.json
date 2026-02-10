@@ -3,7 +3,7 @@
     "publishConfig": {
         "access": "public"
     },
-    "version": "1.0.11",
+    "version": "1.1.0",
     "description": "CLI tool to generate Playwright e2e tests for Experiment Framework projects",
     "type": "module",
     "bin": {
@@ -23,6 +23,9 @@
     ],
     "author": "Aldisogody",
     "license": "MIT",
+    "scripts": {
+        "test": "node --test tests/*.test.js"
+    },
     "engines": {
         "node": ">=v16.15.1"
     },
