@@ -4,6 +4,9 @@ example-tests-directory/
 .DS_Store
 *.log
 
+# Tests
+tests/
+
 # Git
 .git/
 .gitignore

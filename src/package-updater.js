@@ -18,8 +18,8 @@ export async function updatePackageJson(targetDir) {
 	// Define additions
 	const additions = {
 		devDependencies: {
-			'@playwright/test': '1.40.0',
-			'playwright': '1.40.0',
+			'@playwright/test': '^1.49.0',
+			'playwright': '^1.49.0',
 		},
 		scripts: {},
 	};

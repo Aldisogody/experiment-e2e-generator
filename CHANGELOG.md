@@ -7,7 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-02-09
+
+### Added
+- Unit tests for utils, markets, and package-updater modules using Node.js built-in test runner (60 tests)
+- CI validation workflow (GitHub Actions) with Node 18 + 20 matrix
+- Module import smoke test in CI pipeline
+
+### Changed
+- Added unit testing
+
+## [1.0.12] - 2026-02-09
+
 ### Fixed
+- Updated Playwright dependency from pinned 1.40.0 to ^1.49.0 range
 - Removed unnecessary JSON parsing in multi-market templates
 - Resolved multi-market template bugs and broken API references in generated files
 
@@ -80,7 +93,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fs-extra ^11.3.3 - File system utilities
 - prompts ^2.4.2 - Interactive CLI prompts
 
-[Unreleased]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.11...HEAD
+[Unreleased]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.12...v1.1.0
+[1.0.12]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.11...v1.0.12
 [1.0.11]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.9...v1.0.11
 [1.0.9]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.8...v1.0.9
 [1.0.8]: https://github.com/Aldisogody/experiment-e2e-generator/compare/v1.0.7...v1.0.8
