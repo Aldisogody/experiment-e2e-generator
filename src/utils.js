@@ -65,7 +65,7 @@ export function mergePackageJson(existing, additions) {
 		};
 	}
 	
-	// Merge scripts (don't overwrite existing)
+	// Merge scripts (additions take precedence on key collision)
 	if (additions.scripts) {
 		merged.scripts = {
 			...merged.scripts,

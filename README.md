@@ -1,6 +1,6 @@
 # @sogody/experiment-e2e-generator
 
-A CLI tool to scaffold Playwright E2E testing infrastructure for Experiment Framework projects. Generate a complete test setup with configuration, fixtures, utilities, and sample tests in seconds.
+A CLI tool to scaffold Playwright E2E testing infrastructure for Experiment Framework projects. Generate a complete test setup with configuration and sample tests in seconds.
 
 ## Features
 
@@ -31,17 +31,12 @@ your-project/
 ├── playwright.config.js            # Multi-browser config (Chromium, Firefox, WebKit)
 ├── tests/
 │   ├── config/
-│   │   ├── index.js                # Central config export
 │   │   ├── experiment.config.js    # Experiment name, market group, timeouts, Adobe Target
 │   │   └── qa-links.config.js      # Per-market control/experiment URLs with env var support
-│   ├── e2e/
-│   │   └── your-experiment/
-│   │       ├── your-experiment.spec.js   # Live URL tests (control vs experiment)
-│   │       └── experiment-test.spec.js   # Bundle smoke test (loads built JS into blank page)
-│   ├── fixtures/
-│   │   └── test-fixtures.js        # Custom fixtures (experiment context, Adobe preview)
-│   └── utils/
-│       └── test-helpers.js         # Helpers (network idle, scroll, retry, screenshot)
+│   └── e2e/
+│       └── your-experiment/
+│           ├── your-experiment.spec.js   # Live URL tests (control vs experiment, all markets)
+│           └── experiment-test.spec.js   # Bundle smoke test (loads built JS into blank page)
 └── package.json                    # Updated with Playwright dependencies and test scripts
 ```
 
@@ -77,11 +72,8 @@ Please provide the following information:
 📁 Generating test files...
 
   ✓ playwright.config.js
-  ✓ tests/config/index.js
   ✓ tests/config/experiment.config.js
   ✓ tests/config/qa-links.config.js
-  ✓ tests/fixtures/test-fixtures.js
-  ✓ tests/utils/test-helpers.js
   ✓ tests/e2e/my-awesome-experiment/my-awesome-experiment.spec.js
   ✓ tests/e2e/my-awesome-experiment/experiment-test.spec.js
   ✓ Added tests/ to .eslintignore

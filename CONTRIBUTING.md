@@ -51,12 +51,12 @@ experiment-e2e-generator/
 ├── templates/
 │   ├── playwright.config.js
 │   └── tests/
-│       ├── config/             # index.js, experiment.config.js, qa-links.config.js
-│       ├── e2e/experiment-name/
-│       │   ├── experiment.spec.js   # Live URL control/experiment tests
-│       │   └── experiment-test.spec.js   # Bundle/component test
-│       ├── fixtures/test-fixtures.js
-│       └── utils/test-helpers.js
+│       ├── config/
+│       │   ├── experiment.config.js    # Experiment name, markets, timeouts
+│       │   └── qa-links.config.js      # Per-market control/experiment URLs
+│       └── e2e/experiment-name/
+│           ├── experiment.spec.js      # Live URL control/experiment tests (all markets)
+│           └── experiment-test.spec.js # Bundle smoke test
 ├── package.json
 └── README.md
 ```

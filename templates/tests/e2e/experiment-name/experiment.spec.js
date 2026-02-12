@@ -1,55 +1,62 @@
 import { test, expect } from '@playwright/test';
-import { qaLinksConfig, validateUrls } from '../../config/index.js';
+import { experimentConfig } from '../../config/experiment.config.js';
+import { qaLinksConfig, validateUrls } from '../../config/qa-links.config.js';
 
-test.describe('{{EXPERIMENT_NAME}} - Control', () => {
-	test.beforeEach(async ({ page }) => {
+const markets = qaLinksConfig.markets;
+
+test.describe('{{EXPERIMENT_NAME}}', () => {
+	test.beforeAll(() => {
 		validateUrls();
-		const { controlUrl } = qaLinksConfig.getUrls(qaLinksConfig.markets[0].code);
-		await page.goto(controlUrl);
 	});
 
-	test('should not display experiment component', async ({ page }) => {
-		// TODO: Update this selector to match your experiment component
-		const experimentComponent = page.locator('[data-experiment="{{EXPERIMENT_NAME_KEBAB}}"]');
-		
-		// Verify the experiment component is not visible in control
-		await expect(experimentComponent).not.toBeVisible();
-	});
+	for (const market of markets) {
+		const { controlUrl, experimentUrl } = qaLinksConfig.getUrls(market.code);
 
-	test('should display baseline content', async ({ page }) => {
-		// TODO: Add assertions to verify baseline/control content
-		// Example:
-		// await expect(page.getByRole('heading', { name: 'Control Heading' })).toBeVisible();
-	});
-});
+		test.describe(`[${market.code}] Control`, () => {
+			test.beforeEach(async ({ page }) => {
+				await page.goto(controlUrl, { timeout: experimentConfig.timeouts.navigation });
+			});
 
-test.describe('{{EXPERIMENT_NAME}} - Experiment', () => {
-	test.beforeEach(async ({ page }) => {
-		validateUrls();
-		const { experimentUrl } = qaLinksConfig.getUrls(qaLinksConfig.markets[0].code);
-		await page.goto(experimentUrl);
-	});
+			test('should not display experiment component', async ({ page }) => {
+				// TODO: Update this selector to match your experiment component
+				const experimentComponent = page.locator('[data-experiment="{{EXPERIMENT_NAME_KEBAB}}"]');
 
-	test('should display experiment component', async ({ page }) => {
-		// TODO: Update this selector to match your experiment component
-		const experimentComponent = page.locator('[data-experiment="{{EXPERIMENT_NAME_KEBAB}}"]');
-		
-		// Verify the experiment component is visible
-		await expect(experimentComponent).toBeVisible();
-	});
+				await expect(experimentComponent).not.toBeVisible();
+			});
 
-	test('should have correct experiment styling', async ({ page }) => {
-		// TODO: Add assertions to verify experiment-specific styling or content
-		// Example:
-		// const experimentButton = page.getByRole('button', { name: 'Experiment CTA' });
-		// await expect(experimentButton).toBeVisible();
-		// await expect(experimentButton).toHaveCSS('background-color', 'rgb(0, 119, 200)');
-	});
+			test('should display baseline content', async ({ page }) => {
+				// TODO: Add assertions to verify baseline/control content
+				// Example:
+				// await expect(page.getByRole('heading', { name: 'Control Heading' })).toBeVisible();
+			});
+		});
 
-	test('should handle user interactions correctly', async ({ page }) => {
-		// TODO: Add test for user interactions with the experiment component
-		// Example:
-		// await page.getByRole('button', { name: 'Click Me' }).click();
-		// await expect(page.getByText('Success!')).toBeVisible();
-	});
+		test.describe(`[${market.code}] Experiment`, () => {
+			test.beforeEach(async ({ page }) => {
+				await page.goto(experimentUrl, { timeout: experimentConfig.timeouts.navigation });
+			});
+
+			test('should display experiment component', async ({ page }) => {
+				// TODO: Update this selector to match your experiment component
+				const experimentComponent = page.locator('[data-experiment="{{EXPERIMENT_NAME_KEBAB}}"]');
+
+				await expect(experimentComponent).toBeVisible();
+			});
+
+			test('should have correct experiment styling', async ({ page }) => {
+				// TODO: Add assertions to verify experiment-specific styling or content
+				// Example:
+				// const experimentButton = page.getByRole('button', { name: 'Experiment CTA' });
+				// await expect(experimentButton).toBeVisible();
+				// await expect(experimentButton).toHaveCSS('background-color', 'rgb(0, 119, 200)');
+			});
+
+			test('should handle user interactions correctly', async ({ page }) => {
+				// TODO: Add test for user interactions with the experiment component
+				// Example:
+				// await page.getByRole('button', { name: 'Click Me' }).click();
+				// await expect(page.getByText('Success!')).toBeVisible();
+			});
+		});
+	}
 });

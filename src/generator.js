@@ -1,6 +1,6 @@
 import path from 'path';
 import chalk from 'chalk';
-import { validateProjectDirectory, pathExists } from './utils.js';
+import { validateProjectDirectory } from './utils.js';
 import { getUserInput, confirmAction } from './prompts.js';
 import { generateTestFiles, testsDirectoryExists, getGeneratedFilesList, addTestsToEslintIgnore, addTestOutputDirsToGitignore } from './file-operations.js';
 import { updatePackageJson, isPlaywrightInstalled, installDependencies, runBuildAndTests } from './package-updater.js';
@@ -106,6 +106,9 @@ export async function generator() {
 		// Step 6: Display completion message
 		console.log(chalk.green.bold('\n✓ Test structure generated successfully!\n'));
 		
+		const kebabName = config.experimentName.toLowerCase().replace(/\s+/g, '-');
+		const marketCodes = formatMarketCodes(config.markets);
+
 		console.log(chalk.blue('Next steps:\n'));
 		let step = 1;
 		if (!installSucceeded && packageResult.updated) {
@@ -113,22 +116,20 @@ export async function generator() {
 			console.log(chalk.gray('     yarn install  (or npm install)\n'));
 			step++;
 		}
-		console.log(chalk.white(`  ${step}. Update test URLs in:`));
-		console.log(chalk.gray('     tests/config/qa-links.config.js'));
-		if (config.markets && config.markets.length > 1) {
-			console.log(chalk.gray(`     Configure URLs for each market: ${formatMarketCodes(config.markets)}`));
-			console.log(chalk.gray('     Or use environment variables: CONTROL_URL_<MARKET>, EXPERIMENT_URL_<MARKET>\n'));
-		} else {
-			console.log('');
+		console.log(chalk.white(`  ${step}. Set QA link environment variables for each market (${marketCodes}):`));
+		for (const market of config.markets) {
+			console.log(chalk.gray(`     CONTROL_URL_${market.code}=https://...`));
+			console.log(chalk.gray(`     EXPERIMENT_URL_${market.code}=https://...`));
 		}
+		console.log(chalk.gray('\n     Tests will fail until these are set.\n'));
 		step++;
 		console.log(chalk.white(`  ${step}. Customize test selectors in:`));
-		console.log(chalk.gray(`     tests/e2e/${config.experimentName.toLowerCase().replace(/\s+/g, '-')}/${config.experimentName.toLowerCase().replace(/\s+/g, '-')}.spec.js\n`));
+		console.log(chalk.gray(`     tests/e2e/${kebabName}/${kebabName}.spec.js\n`));
 		step++;
 		console.log(chalk.white(`  ${step}. Run tests:`));
-		console.log(chalk.gray('     Run experiment smoke test: yarn test:e2e:experiment  (or npm run test:e2e:experiment)'));
-		console.log(chalk.gray('     Run all e2e tests (after configuring URLs): yarn test:e2e  (or npm run test:e2e)\n'));
-		
+		console.log(chalk.gray('     Smoke test (bundle only):  yarn test:e2e:experiment'));
+		console.log(chalk.gray('     Full suite (needs URLs):   yarn test:e2e\n'));
+
 		console.log(chalk.blue('📖 Documentation:'));
 		console.log(chalk.gray('   https://playwright.dev/docs/intro\n'));
 

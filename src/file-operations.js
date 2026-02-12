@@ -1,7 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
-import { copyTemplateFile, ensureDir, toKebabCase } from './utils.js';
+import { copyTemplateFile, toKebabCase } from './utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,19 +29,12 @@ export async function generateTestFiles(targetDir, config) {
 	const fileMappings = [
 		// Root level playwright config
 		['playwright.config.js', 'playwright.config.js'],
-		
+
 		// Config files
-		['tests/config/index.js', 'tests/config/index.js'],
 		['tests/config/experiment.config.js', 'tests/config/experiment.config.js'],
 		['tests/config/qa-links.config.js', 'tests/config/qa-links.config.js'],
-		
-		// Fixtures
-		['tests/fixtures/test-fixtures.js', 'tests/fixtures/test-fixtures.js'],
-		
-		// Utils
-		['tests/utils/test-helpers.js', 'tests/utils/test-helpers.js'],
-		
-		// Test spec (with dynamic folder name)
+
+		// Test specs (with dynamic folder name)
 		[
 			'tests/e2e/experiment-name/experiment.spec.js',
 			`tests/e2e/${experimentNameKebab}/${experimentNameKebab}.spec.js`,
@@ -86,11 +79,8 @@ export function getGeneratedFilesList(experimentName) {
 	
 	return [
 		'playwright.config.js',
-		'tests/config/index.js',
 		'tests/config/experiment.config.js',
 		'tests/config/qa-links.config.js',
-		'tests/fixtures/test-fixtures.js',
-		'tests/utils/test-helpers.js',
 		`tests/e2e/${experimentNameKebab}/${experimentNameKebab}.spec.js`,
 		`tests/e2e/${experimentNameKebab}/experiment-test.spec.js`,
 	];

@@ -78,7 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Complete template system with `{{VARIABLE}}` placeholder replacement
 - Auto-detection of experiment names from project structure (`package.json` name or first `src/components` entry)
 - Safe package.json updating (preserves existing configuration)
-- Generated test structure: `playwright.config.js`, `tests/config/`, `tests/e2e/`, `tests/fixtures/`, `tests/utils/`
+- Generated test structure: `playwright.config.js`, `tests/config/`, `tests/e2e/`
 - Pre-flight validation checks
 - Warning system for existing test directories
 - Support for environment variables (CONTROL_URL, EXPERIMENT_URL, ADOBE_PREVIEW_TOKEN)
