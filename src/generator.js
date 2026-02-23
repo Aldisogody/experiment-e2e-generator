@@ -116,19 +116,14 @@ export async function generator() {
 			console.log(chalk.gray('     yarn install  (or npm install)\n'));
 			step++;
 		}
-		console.log(chalk.white(`  ${step}. Set QA link environment variables for each market (${marketCodes}):`));
-		for (const market of config.markets) {
-			console.log(chalk.gray(`     CONTROL_URL_${market.code}=https://...`));
-			console.log(chalk.gray(`     EXPERIMENT_URL_${market.code}=https://...`));
-		}
-		console.log(chalk.gray('\n     Tests will fail until these are set.\n'));
+		console.log(chalk.white(`  ${step}. Build your experiment bundle:`));
+		console.log(chalk.gray('     yarn build\n'));
 		step++;
-		console.log(chalk.white(`  ${step}. Customize test selectors in:`));
-		console.log(chalk.gray(`     tests/e2e/${kebabName}/${kebabName}.spec.js\n`));
+		console.log(chalk.white(`  ${step}. Update the locator in:`));
+		console.log(chalk.gray(`     tests/e2e/${kebabName}/experiment-test.spec.js\n`));
 		step++;
 		console.log(chalk.white(`  ${step}. Run tests:`));
-		console.log(chalk.gray('     Smoke test (bundle only):  yarn test:e2e:experiment'));
-		console.log(chalk.gray('     Full suite (needs URLs):   yarn test:e2e\n'));
+		console.log(chalk.gray('     yarn test:e2e:experiment\n'));
 
 		console.log(chalk.blue('📖 Documentation:'));
 		console.log(chalk.gray('   https://playwright.dev/docs/intro\n'));

@@ -1,30 +1,16 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Playwright configuration for {{EXPERIMENT_NAME}} experiment tests
- * @see https://playwright.dev/docs/test-configuration
- */
 export default defineConfig({
 	testDir: './tests',
 	fullyParallel: true,
+	forbidOnly: !!process.env.CI,
+	retries: process.env.CI ? 2 : 0,
 	reporter: 'html',
 	use: {
+		screenshot: 'only-on-failure',
 		trace: 'on-first-retry',
-		screenshot: 'on',
-		video: 'off',
 	},
 	projects: [
-		{
-			name: 'chromium',
-			use: { ...devices['Desktop Chrome'] },
-		},
-		{
-			name: 'firefox',
-			use: { ...devices['Desktop Firefox'] },
-		},
-		{
-			name: 'webkit',
-			use: { ...devices['Desktop Safari'] },
-		},
+		{ name: 'chromium', use: { ...devices['Desktop Chrome'] } },
 	],
 });

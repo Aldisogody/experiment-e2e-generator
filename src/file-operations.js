@@ -31,14 +31,10 @@ export async function generateTestFiles(targetDir, config) {
 		['playwright.config.js', 'playwright.config.js'],
 
 		// Config files
+		['tests/config/urls.config.js', 'tests/config/urls.config.js'],
 		['tests/config/experiment.config.js', 'tests/config/experiment.config.js'],
-		['tests/config/qa-links.config.js', 'tests/config/qa-links.config.js'],
 
-		// Test specs (with dynamic folder name)
-		[
-			'tests/e2e/experiment-name/experiment.spec.js',
-			`tests/e2e/${experimentNameKebab}/${experimentNameKebab}.spec.js`,
-		],
+		// Test spec (with dynamic folder name)
 		[
 			'tests/e2e/experiment-name/experiment-test.spec.js',
 			`tests/e2e/${experimentNameKebab}/experiment-test.spec.js`,
@@ -79,9 +75,8 @@ export function getGeneratedFilesList(experimentName) {
 	
 	return [
 		'playwright.config.js',
+		'tests/config/urls.config.js',
 		'tests/config/experiment.config.js',
-		'tests/config/qa-links.config.js',
-		`tests/e2e/${experimentNameKebab}/${experimentNameKebab}.spec.js`,
 		`tests/e2e/${experimentNameKebab}/experiment-test.spec.js`,
 	];
 }
