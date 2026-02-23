@@ -47,3 +47,6 @@ logs/
 .env
 
 CLAUDE.md
+
+# Git worktrees
+.worktrees/
