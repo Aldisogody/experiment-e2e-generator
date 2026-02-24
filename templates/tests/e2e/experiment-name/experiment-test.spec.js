@@ -39,18 +39,13 @@ for (const market of experimentConfig.markets) {
 
 		test('experiment component appears after injection', async ({ page }) => {
 			await page.addScriptTag({ content: bundle });
-			// TODO: replace with your experiment's root selector
-			// Examples:
-			//   page.locator('[data-experiment="{{EXPERIMENT_NAME_KEBAB}}"]')
-			//   page.getByRole('button', { name: 'Shop Now' })
-			const component = page.locator('[data-experiment="{{EXPERIMENT_NAME_KEBAB}}"]');
+			const component = page.locator('{{COMPONENT_SELECTOR}}');
 			await expect(component).toBeVisible();
 		});
 
 		test('control page is unmodified before injection', async ({ page }) => {
 			// Verify the experiment component does NOT appear without the bundle
-			// TODO: replace with your experiment's root selector (same as above)
-			const component = page.locator('[data-experiment="{{EXPERIMENT_NAME_KEBAB}}"]');
+			const component = page.locator('{{COMPONENT_SELECTOR}}');
 			await expect(component).not.toBeVisible();
 		});
 	});

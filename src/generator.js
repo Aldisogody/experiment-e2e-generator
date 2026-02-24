@@ -1,7 +1,8 @@
 import path from 'path';
 import chalk from 'chalk';
 import { validateProjectDirectory } from './utils.js';
-import { getUserInput, confirmAction } from './prompts.js';
+import { getUserInput, confirmAction, selectComponentSelector } from './prompts.js';
+import { scanForSelectors } from './selector-scanner.js';
 import { generateTestFiles, testsDirectoryExists, getGeneratedFilesList, addTestsToEslintIgnore, addTestOutputDirsToGitignore } from './file-operations.js';
 import { updatePackageJson, isPlaywrightInstalled, installDependencies, runBuildAndTests } from './package-updater.js';
 import { formatMarketCodes } from './markets.js';
@@ -54,6 +55,14 @@ export async function generator() {
 	console.log(chalk.gray(`   Market Group: ${config.marketGroup}`));
 	console.log(chalk.gray(`   Markets: ${formatMarketCodes(config.markets)}`));
 	
+	// Step 2.5: Scan for selectors
+	const selectorCandidates = await scanForSelectors(cwd);
+	if (selectorCandidates.length > 0) {
+		console.log(chalk.blue(`\n🔍 Found ${selectorCandidates.length} selector candidate(s) in src/\n`));
+	}
+	const chosenSelector = await selectComponentSelector(selectorCandidates);
+	config.componentSelector = chosenSelector;
+
 	// Step 3: Generate files
 	console.log(chalk.blue('\n📁 Generating test files...\n'));
 	
