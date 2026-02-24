@@ -12,10 +12,19 @@ const TEMPLATES_DIR = path.join(__dirname, '..', 'templates');
  * @param {string} targetDir - Target project directory
  * @param {Object} config - Configuration object with user inputs
  */
+/**
+ * Build the fallback selector string (with TODO comment) for when no real selector is chosen.
+ * @param {string} experimentNameKebab
+ * @returns {string}
+ */
+function buildFallbackSelector(experimentNameKebab) {
+	return `[data-experiment="${experimentNameKebab}"]`;
+}
+
 export async function generateTestFiles(targetDir, config) {
-	const { experimentName, baseUrl, marketGroup, markets } = config;
+	const { experimentName, baseUrl, marketGroup, markets, componentSelector } = config;
 	const experimentNameKebab = toKebabCase(experimentName);
-	
+
 	// Template variables
 	const variables = {
 		EXPERIMENT_NAME: experimentName,
@@ -23,6 +32,7 @@ export async function generateTestFiles(targetDir, config) {
 		BASE_URL: baseUrl,
 		MARKET_GROUP: marketGroup,
 		MARKETS_JSON: JSON.stringify(markets),
+		COMPONENT_SELECTOR: componentSelector ?? buildFallbackSelector(experimentNameKebab),
 	};
 	
 	// Define file mappings: [source, destination]

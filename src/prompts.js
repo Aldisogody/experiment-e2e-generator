@@ -1,3 +1,4 @@
+import path from 'path';
 import prompts from 'prompts';
 import { detectExperimentName } from './utils.js';
 import { getMarketChoices, resolveMarkets, formatMarketCodes } from './markets.js';
@@ -92,6 +93,39 @@ export async function getUserInput(cwd) {
 	}
 	
 	return response;
+}
+
+/**
+ * Present scanned selector candidates and let the user pick one.
+ * @param {Array<{value: string, type: number, file: string, line: number}>} candidates
+ * @returns {Promise<string|null>} Selected selector string, or null if placeholder chosen
+ */
+export async function selectComponentSelector(candidates) {
+	if (candidates.length === 0) {
+		return null;
+	}
+
+	const typeLabels = { 1: 'injected marker', 2: 'config export', 3: 'selectors obj', 4: 'querySelector' };
+
+	const choices = candidates.map((c) => ({
+		title: `${c.value}  [${typeLabels[c.type] ?? `type ${c.type}`}]  — ${path.basename(c.file)}`,
+		value: c.value,
+	}));
+
+	choices.push({ title: 'Use placeholder (add manually later)', value: null });
+
+	const response = await prompts({
+		type: 'select',
+		name: 'selector',
+		message: 'Select the component selector for your experiment tests',
+		choices,
+	}, {
+		onCancel: () => {
+			return { selector: null };
+		},
+	});
+
+	return response.selector ?? null;
 }
 
 /**
