@@ -1,7 +1,7 @@
 import path from 'path';
 import chalk from 'chalk';
 import { validateProjectDirectory } from './utils.js';
-import { getUserInput, confirmAction, selectComponentSelector } from './prompts.js';
+import { getUserInput, confirmAction, selectComponentSelector, getPagePathSelections } from './prompts.js';
 import { scanForSelectors } from './selector-scanner.js';
 import { generateTestFiles, testsDirectoryExists, getGeneratedFilesList, addTestsToEslintIgnore, addTestOutputDirsToGitignore } from './file-operations.js';
 import { updatePackageJson, isPlaywrightInstalled, installDependencies, runBuildAndTests } from './package-updater.js';
@@ -55,6 +55,14 @@ export async function generator() {
 	console.log(chalk.gray(`   Market Group: ${config.marketGroup}`));
 	console.log(chalk.gray(`   Markets: ${formatMarketCodes(config.markets)}`));
 	
+	// Step 2.4: Get page path selections
+	console.log(chalk.blue('\n🗂  Which pages does this experiment run on?\n'));
+	const pagePaths = await getPagePathSelections();
+	if (pagePaths.length > 0) {
+		console.log(chalk.gray(`   Page paths: ${pagePaths.map(p => p.value).join(', ')}`));
+	}
+	config.pagePaths = pagePaths;
+
 	// Step 2.5: Scan for selectors
 	const selectorCandidates = await scanForSelectors(cwd);
 	if (selectorCandidates.length > 0) {
