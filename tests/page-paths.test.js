@@ -43,3 +43,30 @@ test('value keys in PAGE_PATH_CHOICES are unique', () => {
 	const unique = new Set(values);
 	assert.equal(unique.size, values.length, 'duplicate value keys found');
 });
+
+test('buildPagePathsJs handles single selection', () => {
+	const result = buildPagePathsJs([{ value: 'pfpTvsAll', path: '/tvs/all-tvs/', type: 'PFP' }]);
+	assert.ok(result.includes("pfpTvsAll: '/tvs/all-tvs/'"));
+	assert.ok(result.startsWith('export const pagePaths = {'));
+	assert.ok(result.trimEnd().endsWith('};'));
+});
+
+test('buildPagePathsJs output is valid JS structure (parseable)', () => {
+	const selections = PAGE_PATH_CHOICES.slice(0, 5);
+	const result = buildPagePathsJs(selections);
+	const body = result.replace('export const pagePaths = ', 'const pagePaths = ');
+	assert.doesNotThrow(() => new Function(body));
+});
+
+test('buildPagePathsJs handles null input gracefully', () => {
+	const result = buildPagePathsJs(null);
+	assert.ok(result.includes('// TODO'));
+});
+
+test('getPagePathPromptChoices inserts separator headers between types', () => {
+	const choices = getPagePathPromptChoices();
+	const separators = choices.filter(c => c.disabled);
+	assert.equal(separators.length, 4, 'should have one separator per page type');
+	const selectable = choices.filter(c => !c.disabled);
+	assert.ok(selectable.every(c => !String(c.value).startsWith('__sep_')), 'selectable entries must not have __sep_ values');
+});
