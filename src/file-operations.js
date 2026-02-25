@@ -2,6 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
 import { copyTemplateFile, toKebabCase } from './utils.js';
+import { buildPagePathsJs } from './page-paths.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +34,7 @@ export async function generateTestFiles(targetDir, config) {
 		MARKET_GROUP: marketGroup,
 		MARKETS_JSON: JSON.stringify(markets),
 		COMPONENT_SELECTOR: componentSelector ?? buildFallbackSelector(experimentNameKebab),
+		PAGE_PATHS_JS: buildPagePathsJs(config.pagePaths ?? []),
 	};
 	
 	// Define file mappings: [source, destination]
@@ -43,6 +45,7 @@ export async function generateTestFiles(targetDir, config) {
 		// Config files
 		['tests/config/urls.config.js', 'tests/config/urls.config.js'],
 		['tests/config/experiment.config.js', 'tests/config/experiment.config.js'],
+		['tests/config/page-paths.config.js', 'tests/config/page-paths.config.js'],
 
 		// Test spec (with dynamic folder name)
 		[
@@ -87,6 +90,7 @@ export function getGeneratedFilesList(experimentName) {
 		'playwright.config.js',
 		'tests/config/urls.config.js',
 		'tests/config/experiment.config.js',
+		'tests/config/page-paths.config.js',
 		`tests/e2e/${experimentNameKebab}/experiment-test.spec.js`,
 	];
 }
