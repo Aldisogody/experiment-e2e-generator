@@ -2,6 +2,7 @@ import path from 'path';
 import prompts from 'prompts';
 import { detectExperimentName } from './utils.js';
 import { getMarketChoices, resolveMarkets, formatMarketCodes } from './markets.js';
+import { PAGE_PATH_CHOICES, getPagePathPromptChoices } from './page-paths.js';
 
 /**
  * Get user input through interactive prompts
@@ -126,6 +127,32 @@ export async function selectComponentSelector(candidates) {
 	});
 
 	return response.selector ?? null;
+}
+
+/**
+ * Multi-select prompt: which Samsung page categories does this experiment target?
+ * Choices are grouped by page type (PFP / PCD / PDP / BUY) with visual separators.
+ * @returns {Promise<Array<{value: string, path: string, type: string}>>} Selected entries
+ */
+export async function getPagePathSelections() {
+	const response = await prompts({
+		type: 'multiselect',
+		name: 'pagePaths',
+		message: 'Which page paths does your experiment target? (space to select, enter to confirm)',
+		choices: getPagePathPromptChoices(),
+		hint: '- Space to select. Return to submit',
+		instructions: false,
+	}, {
+		onCancel: () => ({ pagePaths: [] }),
+	});
+
+	const selectedValues = (response.pagePaths ?? []).filter(v => !String(v).startsWith('__sep_'));
+
+	// Re-attach path + type from PAGE_PATH_CHOICES (prompts returns only value)
+	return selectedValues.map((value) => {
+		const choice = PAGE_PATH_CHOICES.find((c) => c.value === value);
+		return choice ?? { value, path: `/${value}/`, type: 'PFP' };
+	});
 }
 
 /**
