@@ -135,27 +135,6 @@ export function getPagePathPromptChoices() {
 	return choices;
 }
 
-/**
- * Convert an array of selected page-path entries to a JS object literal string
- * suitable for injection as {{PAGE_PATHS_JS}} in templates.
- *
- * @param {Array<{value: string, path: string, type: string}>} selections
- * @returns {string}
- */
-export function buildPagePathsJs(selections) {
-	if (!selections || selections.length === 0) {
-		return [
-			'export const pagePaths = {',
-			'\t// TODO: add page paths your experiment targets',
-			"\t// pfpTvsAll: '/tvs/all-tvs/',",
-			'};',
-		].join('\n');
-	}
-
-	const entries = selections.map(({ value, path }) => `\t${value}: '${path}',`);
-	return ['export const pagePaths = {', ...entries, '};'].join('\n');
-}
-
 // ── Grouped exports (type → category) ────────────────────────────────────────
 
 /**

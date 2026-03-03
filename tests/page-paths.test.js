@@ -1,19 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { PAGE_PATH_CHOICES, buildPagePathsJs, getPagePathPromptChoices } from '../src/page-paths.js';
-
-// Grouped exports (pfp, pcd, pdp, buy) – loaded dynamically so pre-existing
-// tests still run even before Task 2 adds these exports to page-paths.js.
-let pfp, pcd, pdp, buy;
-try {
-  const mod = await import('../src/page-paths.js');
-  pfp = mod.pfp;
-  pcd = mod.pcd;
-  pdp = mod.pdp;
-  buy = mod.buy;
-} catch {
-  // exports not yet implemented – new tests below will fail with clear messages
-}
+import { PAGE_PATH_CHOICES, getPagePathPromptChoices, pfp, pcd, pdp, buy } from '../src/page-paths.js';
 
 test('PAGE_PATH_CHOICES is a non-empty array with all 4 page types', () => {
 	assert.ok(Array.isArray(PAGE_PATH_CHOICES));
@@ -33,47 +20,10 @@ test('each choice has title, value, path, and type fields', () => {
 	}
 });
 
-test('buildPagePathsJs generates correct JS object literal from selections', () => {
-	const selections = [
-		{ value: 'pfpTvsAll', path: '/tvs/all-tvs/', type: 'PFP' },
-		{ value: 'pfpTvsOled', path: '/tvs/oled-tvs/', type: 'PFP' },
-	];
-	const result = buildPagePathsJs(selections);
-	assert.ok(result.includes("pfpTvsAll: '/tvs/all-tvs/'"), `missing pfpTvsAll in:\n${result}`);
-	assert.ok(result.includes("pfpTvsOled: '/tvs/oled-tvs/'"), `missing pfpTvsOled in:\n${result}`);
-	assert.ok(result.startsWith('export const pagePaths = {'), `wrong start:\n${result}`);
-	assert.ok(result.trimEnd().endsWith('};'), `wrong end:\n${result}`);
-});
-
-test('buildPagePathsJs generates TODO comment when no selections', () => {
-	const result = buildPagePathsJs([]);
-	assert.ok(result.includes('// TODO'), `should contain TODO comment:\n${result}`);
-	assert.ok(result.startsWith('export const pagePaths = {'), `wrong start:\n${result}`);
-});
-
 test('value keys in PAGE_PATH_CHOICES are unique', () => {
 	const values = PAGE_PATH_CHOICES.map(c => c.value);
 	const unique = new Set(values);
 	assert.equal(unique.size, values.length, 'duplicate value keys found');
-});
-
-test('buildPagePathsJs handles single selection', () => {
-	const result = buildPagePathsJs([{ value: 'pfpTvsAll', path: '/tvs/all-tvs/', type: 'PFP' }]);
-	assert.ok(result.includes("pfpTvsAll: '/tvs/all-tvs/'"));
-	assert.ok(result.startsWith('export const pagePaths = {'));
-	assert.ok(result.trimEnd().endsWith('};'));
-});
-
-test('buildPagePathsJs output is valid JS structure (parseable)', () => {
-	const selections = PAGE_PATH_CHOICES.slice(0, 5);
-	const result = buildPagePathsJs(selections);
-	const body = result.replace('export const pagePaths = ', 'const pagePaths = ');
-	assert.doesNotThrow(() => new Function(body));
-});
-
-test('buildPagePathsJs handles null input gracefully', () => {
-	const result = buildPagePathsJs(null);
-	assert.ok(result.includes('// TODO'));
 });
 
 test('getPagePathPromptChoices inserts separator headers between types', () => {
