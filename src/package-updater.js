@@ -1,7 +1,14 @@
 import path from 'path';
 import { spawnSync } from 'child_process';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
 import { mergePackageJson, formatPackageJson, pathExists } from './utils.js';
+
+const __dirnameLocal = path.dirname(fileURLToPath(import.meta.url));
+const { version: GENERATOR_VERSION } = JSON.parse(
+	readFileSync(path.join(__dirnameLocal, '..', 'package.json'), 'utf-8')
+);
 
 /**
  * Update package.json with Playwright scripts only (devDependencies are installed via targeted add command).
@@ -16,9 +23,14 @@ export async function updatePackageJson(targetDir) {
 
 	const existingDevDeps = existingPackageJson.devDependencies || {};
 	const needsPlaywright = !existingDevDeps['@playwright/test'];
+	const needsGenerator = !existingDevDeps['experiment-e2e-generator'];
 
 	if (needsPlaywright) {
 		changes.push('Added Playwright dependencies to devDependencies');
+	}
+
+	if (needsGenerator) {
+		changes.push('Added experiment-e2e-generator to devDependencies');
 	}
 
 	// Collect script additions only — devDependencies are handled by installDependencies
@@ -44,9 +56,10 @@ export async function updatePackageJson(targetDir) {
 		await fs.writeFile(packageJsonPath, formattedContent, 'utf-8');
 	}
 
-	const packages = needsPlaywright
-		? ['@playwright/test@1.40.0', 'playwright@1.40.0']
-		: [];
+	const packages = [
+		...(needsPlaywright ? ['@playwright/test@1.40.0', 'playwright@1.40.0'] : []),
+		...(needsGenerator  ? [`experiment-e2e-generator@^${GENERATOR_VERSION}`] : []),
+	];
 
 	return { updated: true, changes, packages };
 }
