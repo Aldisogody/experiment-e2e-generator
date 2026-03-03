@@ -106,11 +106,11 @@ export async function generator() {
 			console.log(chalk.gray('  ℹ No package.json updates needed'));
 		}
 		
-		// Step 5: Install dependencies in target project (only Playwright from its package.json)
+		// Step 5: Install Playwright packages via targeted add (no full lockfile re-resolve)
 		let installSucceeded = false;
-		if (packageResult.updated) {
+		if (packageResult.packages && packageResult.packages.length > 0) {
 			console.log(chalk.blue('\n📥 Installing Playwright...\n'));
-			const installResult = await installDependencies(cwd);
+			const installResult = await installDependencies(cwd, packageResult.packages);
 			if (installResult.success) {
 				installSucceeded = true;
 				console.log(chalk.green('  ✓ Playwright installed\n'));

@@ -4,55 +4,51 @@ import fs from 'fs-extra';
 import { mergePackageJson, formatPackageJson, pathExists } from './utils.js';
 
 /**
- * Update package.json with Playwright dependencies and scripts
+ * Update package.json with Playwright scripts only (devDependencies are installed via targeted add command).
  * @param {string} targetDir - Target project directory
- * @returns {Promise<{updated: boolean, changes: Array<string>}>}
+ * @returns {Promise<{updated: boolean, changes: Array<string>, packages: Array<string>}>}
  */
 export async function updatePackageJson(targetDir) {
 	const packageJsonPath = path.join(targetDir, 'package.json');
 	const changes = [];
-	
-	// Read existing package.json
+
 	const existingPackageJson = await fs.readJson(packageJsonPath);
-	
-	// Define additions
-	const additions = {
-		devDependencies: {
-			'@playwright/test': '1.40.0',
-			'playwright': '1.40.0',
-		},
-		scripts: {},
-	};
-	
+
 	const existingDevDeps = existingPackageJson.devDependencies || {};
 	const needsPlaywright = !existingDevDeps['@playwright/test'];
-	
+
 	if (needsPlaywright) {
 		changes.push('Added Playwright dependencies to devDependencies');
 	}
-	
-	// Check if test scripts need to be added
+
+	// Collect script additions only — devDependencies are handled by installDependencies
+	const scriptAdditions = {};
 	const existingScripts = existingPackageJson.scripts || {};
 	if (!existingScripts['test:e2e']) {
-		additions.scripts['test:e2e'] = 'playwright test';
+		scriptAdditions['test:e2e'] = 'playwright test';
 		changes.push('Added "test:e2e" script');
 	}
 	if (!existingScripts['test:e2e:experiment']) {
-		additions.scripts['test:e2e:experiment'] = 'playwright test tests/e2e/*/experiment-test.spec.js';
+		scriptAdditions['test:e2e:experiment'] = 'playwright test tests/e2e/*/experiment-test.spec.js';
 		changes.push('Added "test:e2e:experiment" script');
 	}
-	
-	// Only update if there are changes
+
 	if (changes.length === 0) {
-		return { updated: false, changes: [] };
+		return { updated: false, changes: [], packages: [] };
 	}
-	
-	// Merge and write back
-	const updatedPackageJson = mergePackageJson(existingPackageJson, additions);
-	const formattedContent = formatPackageJson(updatedPackageJson);
-	await fs.writeFile(packageJsonPath, formattedContent, 'utf-8');
-	
-	return { updated: true, changes };
+
+	// Only rewrite the file when there are script additions
+	if (Object.keys(scriptAdditions).length > 0) {
+		const updatedPackageJson = mergePackageJson(existingPackageJson, { scripts: scriptAdditions });
+		const formattedContent = formatPackageJson(updatedPackageJson);
+		await fs.writeFile(packageJsonPath, formattedContent, 'utf-8');
+	}
+
+	const packages = needsPlaywright
+		? ['@playwright/test@1.40.0', 'playwright@1.40.0']
+		: [];
+
+	return { updated: true, changes, packages };
 }
 
 /**
@@ -87,15 +83,19 @@ export async function detectPackageManager(targetDir) {
 }
 
 /**
- * Install dependencies in the target project (only installs what's in its package.json, e.g. Playwright)
+ * Install specific packages into the target project without re-resolving the full lockfile.
+ * Uses `yarn add --dev` or `npm install --save-dev` so only the listed packages are touched.
  * @param {string} targetDir - Target project directory
+ * @param {string[]} packages - Packages to add, e.g. ['@playwright/test@1.40.0', 'playwright@1.40.0']
  * @returns {Promise<{success: boolean, error?: string}>}
  */
-export async function installDependencies(targetDir) {
+export async function installDependencies(targetDir, packages) {
 	const packageManager = await detectPackageManager(targetDir);
 	const isWindows = process.platform === 'win32';
 	const cmd = packageManager === 'yarn' ? 'yarn' : 'npm';
-	const args = ['install'];
+	const args = packageManager === 'yarn'
+		? ['add', '--dev', ...packages]
+		: ['install', '--save-dev', ...packages];
 	const result = spawnSync(cmd, args, {
 		cwd: targetDir,
 		stdio: 'inherit',

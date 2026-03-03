@@ -28,10 +28,12 @@ describe('updatePackageJson', () => {
 
 			assert.equal(result.updated, true);
 			assert.ok(result.changes.some((c) => c.includes('Playwright')));
+			// devDependencies are installed via targeted add, not written to package.json
+			assert.ok(result.packages.includes('@playwright/test@1.40.0'));
+			assert.ok(result.packages.includes('playwright@1.40.0'));
 
 			const pkg = await fs.readJson(path.join(tmpDir, 'package.json'));
-			assert.equal(pkg.devDependencies['@playwright/test'], '^1.49.0');
-			assert.equal(pkg.devDependencies['playwright'], '^1.49.0');
+			assert.equal(pkg.devDependencies, undefined);
 		} finally {
 			await fs.remove(tmpDir);
 		}
@@ -62,11 +64,12 @@ describe('updatePackageJson', () => {
 		try {
 			const result = await updatePackageJson(tmpDir);
 
-			// Should still report changes for scripts
+			// Playwright already present — packages list must be empty (no install needed)
+			assert.deepEqual(result.packages, []);
+
+			// User's version must remain untouched in package.json
 			const pkg = await fs.readJson(path.join(tmpDir, 'package.json'));
-			// @playwright/test should remain at the user's version since mergePackageJson
-			// spreads additions after existing (but needsPlaywright check skips the message)
-			assert.ok(pkg.devDependencies['@playwright/test']);
+			assert.equal(pkg.devDependencies['@playwright/test'], '^1.50.0');
 		} finally {
 			await fs.remove(tmpDir);
 		}
@@ -86,6 +89,7 @@ describe('updatePackageJson', () => {
 			const result = await updatePackageJson(tmpDir);
 			assert.equal(result.updated, false);
 			assert.equal(result.changes.length, 0);
+			assert.deepEqual(result.packages, []);
 		} finally {
 			await fs.remove(tmpDir);
 		}
