@@ -9,6 +9,10 @@
     "bin": {
         "experiment-e2e-generator": "./bin/cli.js"
     },
+    "exports": {
+        ".": "./bin/cli.js",
+        "./page-paths": "./src/page-paths.js"
+    },
     "files": [
         "bin",
         "templates",
