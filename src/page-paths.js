@@ -155,3 +155,148 @@ export function buildPagePathsJs(selections) {
 	const entries = selections.map(({ value, path }) => `\t${value}: '${path}',`);
 	return ['export const pagePaths = {', ...entries, '};'].join('\n');
 }
+
+// ── Grouped exports (type → category) ────────────────────────────────────────
+
+/**
+ * PFP (Product Filter/Listing) page paths, grouped by product category.
+ * Spread the categories you need: `{ ...pfp.smartphones, ...pfp.tvs }`
+ */
+export const pfp = {
+	smartphones: {
+		pfpSmartphonesAll:      '/smartphones/all-smartphones/',
+		pfpSmartphonesGalaxyA:  '/smartphones/galaxy-a/',
+		pfpSmartphonesGalaxyS:  '/smartphones/galaxy-s/',
+		pfpSmartphonesGalaxyZ:  '/smartphones/galaxy-z/',
+	},
+	tablets: {
+		pfpTabletsAll:          '/tablets/all-tablets/',
+		pfpTabletsGalaxyTabS:   '/tablets/galaxy-tab-s/',
+		pfpTabletsGalaxyTabA:   '/tablets/galaxy-tab-a/',
+	},
+	computers: {
+		pfpComputersAll:        '/computers/all-computers/',
+		pfpComputersGalaxyBook: '/computers/galaxy-book/',
+		pfpComputersChromebook: '/computers/chromebook/',
+	},
+	monitors: {
+		pfpMonitorsAll:         '/monitors/all-monitors/',
+		pfpMonitorsGaming:      '/monitors/gaming/',
+	},
+	watches: {
+		pfpWatchesAll:          '/watches/all-watches/',
+		pfpWatchesGalaxyWatch:  '/watches/galaxy-watch/',
+	},
+	tvs: {
+		pfpTvsNeoQled:          '/tvs/neo-qled-tvs/',
+		pfpTvsOled:             '/tvs/oled-tvs/',
+		pfpTvsQled:             '/tvs/qled-tvs/',
+		pfpTvs8k:               '/tvs/8k-tv/',
+		pfpTvsAll:              '/tvs/all-tvs/',
+		pfpTvsCrystalUhd:       '/tvs/all-tvs/?crystal-uhd',
+	},
+	lifestyleTvs: {
+		pfpLifestyleTheFrame:   '/lifestyle-tvs/the-frame/',
+		pfpLifestyleTheSerif:   '/lifestyle-tvs/the-serif/',
+		pfpLifestyleTheTerrace: '/lifestyle-tvs/the-terrace/',
+		pfpLifestyleTheSero:    '/lifestyle-tvs/the-sero/',
+	},
+	audio: {
+		pfpAudioAll:            '/audio-devices/all-audio-devices/',
+	},
+	refrigerators: {
+		pfpRefrigeratorsAll:    '/refrigerators/all-refrigerators/',
+		pfpRefrigSmart:         '/refrigerators/smart/',
+		pfpRefrigFrenchDoor:    '/refrigerators/french-door/',
+		pfpRefrigSideBySide:    '/refrigerators/side-by-side/',
+	},
+	washers: {
+		pfpWashersAll:          '/washers-and-dryers/all-washers-and-dryers/',
+		pfpWashingMachines:     '/washers-and-dryers/washing-machines/',
+		pfpWasherDryerCombo:    '/washers-and-dryers/washer-dryer-combo/',
+		pfpDryers:              '/washers-and-dryers/dryers/',
+	},
+	cooking: {
+		pfpCookingAll:          '/cooking-appliances/all-cooking-appliances/',
+		pfpCookingOvens:        '/cooking-appliances/ovens/',
+		pfpCookingHobs:         '/cooking-appliances/hobs/',
+		pfpMicrowaveAll:        '/microwave-ovens/all-microwave-ovens/',
+		pfpCookingHoods:        '/cooking-appliances/hoods/',
+	},
+	dishwashers: {
+		pfpDishwashersAll:      '/dishwashers/all-dishwashers/',
+	},
+	vacuums: {
+		pfpVacuumAll:           '/vacuum-cleaners/all-vacuum-cleaners/',
+	},
+};
+
+/**
+ * PCD (Product Category/Department hub) page paths, grouped by product category.
+ */
+export const pcd = {
+	smartphones:   { pcdSmartphones:   '/smartphones/' },
+	tablets:       { pcdTablets:       '/tablets/' },
+	computers:     { pcdComputers:     '/computers/' },
+	monitors:      { pcdMonitors:      '/monitors/' },
+	watches:       { pcdWatches:       '/watches/' },
+	tvs:           { pcdTvs:           '/tvs/' },
+	lifestyleTvs:  { pcdLifestyleTvs:  '/lifestyle-tvs/' },
+	audio:         { pcdAudio:         '/audio-devices/' },
+	projectors:    { pcdProjectors:    '/projectors/' },
+	refrigerators: { pcdRefrigerators: '/refrigerators/' },
+	washers:       { pcdWashers:       '/washers-and-dryers/' },
+	cooking:       { pcdCooking:       '/cooking-appliances/' },
+	dishwashers:   { pcdDishwashers:   '/dishwashers/' },
+	vacuums:       { pcdVacuum:        '/vacuum-cleaners/' },
+};
+
+/**
+ * PDP (Product Detail Page) paths, grouped by device line.
+ */
+export const pdp = {
+	galaxyZFold: {
+		pdpGalaxyZFold7:    '/smartphones/galaxy-z-fold7/',
+		pdpGalaxyZFold6:    '/smartphones/galaxy-z-fold6/',
+	},
+	galaxyZFlip: {
+		pdpGalaxyZFlip7:    '/smartphones/galaxy-z-flip7/',
+		pdpGalaxyZFlip7Fe:  '/smartphones/galaxy-z-flip7-fe/',
+		pdpGalaxyZFlip6:    '/smartphones/galaxy-z-flip6/',
+	},
+	galaxyS25: {
+		pdpGalaxyS25:       '/smartphones/galaxy-s25/',
+		pdpGalaxyS25Edge:   '/smartphones/galaxy-s25-edge/',
+		pdpGalaxyS25Ultra:  '/smartphones/galaxy-s25-ultra/',
+	},
+	galaxyS24: {
+		pdpGalaxyS24:       '/smartphones/galaxy-s24/',
+		pdpGalaxyS24Fe:     '/smartphones/galaxy-s24-fe/',
+		pdpGalaxyS24Ultra:  '/smartphones/galaxy-s24-ultra/',
+	},
+};
+
+/**
+ * BUY (Purchase/buy flow) page paths, grouped by device line.
+ */
+export const buy = {
+	galaxyZFold: {
+		buyGalaxyZFold7:    '/smartphones/galaxy-z-fold7/buy/',
+		buyGalaxyZFold6:    '/smartphones/galaxy-z-fold6/buy/',
+	},
+	galaxyZFlip: {
+		buyGalaxyZFlip7:    '/smartphones/galaxy-z-flip7/buy/',
+		buyGalaxyZFlip7Fe:  '/smartphones/galaxy-z-flip7-fe/buy/',
+		buyGalaxyZFlip6:    '/smartphones/galaxy-z-flip6/buy/',
+	},
+	galaxyS25: {
+		buyGalaxyS25:       '/smartphones/galaxy-s25/buy/',
+		buyGalaxyS25Edge:   '/smartphones/galaxy-s25-edge/buy/',
+		buyGalaxyS25Ultra:  '/smartphones/galaxy-s25-ultra/buy/',
+	},
+	galaxyS24: {
+		buyGalaxyS24:       '/smartphones/galaxy-s24/buy/',
+		buyGalaxyS24Fe:     '/smartphones/galaxy-s24-fe/buy/',
+		buyGalaxyS24Ultra:  '/smartphones/galaxy-s24-ultra/buy/',
+	},
+};
