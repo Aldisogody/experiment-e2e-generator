@@ -159,11 +159,8 @@ describe('buy grouped export', () => {
 
 test('page-paths.cjs exports same top-level keys as page-paths.js', async () => {
 	const { createRequire } = await import('node:module');
-	const { fileURLToPath } = await import('node:url');
-	const { dirname, join } = await import('node:path');
 
-	const __dirname = dirname(fileURLToPath(import.meta.url));
-	const requireCjs = createRequire(join(__dirname, '../src/page-paths.cjs'));
+	const requireCjs = createRequire(import.meta.url);
 	const cjsExports = requireCjs('../src/page-paths.cjs');
 
 	const esmKeys = ['PAGE_PATH_CHOICES', 'getPagePathPromptChoices', 'pfp', 'pcd', 'pdp', 'buy'];
