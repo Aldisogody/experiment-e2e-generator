@@ -154,3 +154,20 @@ describe('buy grouped export', () => {
     }
   });
 });
+
+// ── CJS shim parity ──────────────────────────────────────────────────────────
+
+test('page-paths.cjs exports same top-level keys as page-paths.js', async () => {
+	const { createRequire } = await import('node:module');
+	const { fileURLToPath } = await import('node:url');
+	const { dirname, join } = await import('node:path');
+
+	const __dirname = dirname(fileURLToPath(import.meta.url));
+	const requireCjs = createRequire(join(__dirname, '../src/page-paths.cjs'));
+	const cjsExports = requireCjs('../src/page-paths.cjs');
+
+	const esmKeys = ['PAGE_PATH_CHOICES', 'getPagePathPromptChoices', 'pfp', 'pcd', 'pdp', 'buy'];
+	for (const key of esmKeys) {
+		assert.ok(key in cjsExports, `page-paths.cjs missing export: ${key}`);
+	}
+});
