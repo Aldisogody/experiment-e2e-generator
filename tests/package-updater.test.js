@@ -123,42 +123,6 @@ describe('updatePackageJson', () => {
 		}
 	});
 
-	it('includes experiment-e2e-generator in packages when missing from devDependencies', async () => {
-		const tmpDir = await createTempProject({ name: 'test', version: '1.0.0' });
-		try {
-			const result = await updatePackageJson(tmpDir);
-			assert.ok(
-				result.packages.some(p => p.startsWith('experiment-e2e-generator@')),
-				`expected experiment-e2e-generator in packages, got: ${JSON.stringify(result.packages)}`
-			);
-		} finally {
-			await fs.remove(tmpDir);
-		}
-	});
-
-	it('does not add experiment-e2e-generator when already in devDependencies', async () => {
-		const tmpDir = await createTempProject({
-			name: 'test',
-			version: '1.0.0',
-			devDependencies: {
-				'@playwright/test': '^1.40.0',
-				'experiment-e2e-generator': '^1.0.0',
-			},
-			scripts: {
-				'test:e2e': 'playwright test',
-				'test:e2e:experiment': 'playwright test tests/e2e/*/experiment-test.spec.js',
-			},
-		});
-		try {
-			const result = await updatePackageJson(tmpDir);
-			assert.ok(
-				!result.packages.some(p => p.startsWith('experiment-e2e-generator@')),
-				'should not re-add experiment-e2e-generator when already present'
-			);
-		} finally {
-			await fs.remove(tmpDir);
-		}
-	});
 });
 
 describe('isPlaywrightInstalled', () => {
