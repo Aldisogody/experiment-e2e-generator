@@ -46,7 +46,11 @@ logs/
 # Environment files
 .env
 
+# AI Architecture files
 CLAUDE.md
+.claude/
+task-description.md
 
 # Git worktrees
 .worktrees/
+
