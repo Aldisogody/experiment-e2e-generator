@@ -11,7 +11,10 @@
     },
     "exports": {
         ".": "./bin/cli.js",
-        "./page-paths": "./src/page-paths.js"
+        "./page-paths": {
+            "import": "./src/page-paths.js",
+            "require": "./src/page-paths.cjs"
+        }
     },
     "files": [
         "bin",
