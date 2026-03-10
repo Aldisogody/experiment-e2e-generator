@@ -130,27 +130,27 @@ export async function selectComponentSelector(candidates) {
 }
 
 const CATEGORY_GROUPS = [
-	{ label: '── PFP (Filter/Listing pages)', group: 'pfp', data: pfp },
-	{ label: '── PCD (Category hubs)',        group: 'pcd', data: pcd },
-	{ label: '── PDP (Product Detail pages)', group: 'pdp', data: pdp },
-	{ label: '── BUY (Purchase pages)',       group: 'buy', data: buy },
+	{ tag: 'PFP', group: 'pfp', data: pfp },
+	{ tag: 'PCD', group: 'pcd', data: pcd },
+	{ tag: 'PDP', group: 'pdp', data: pdp },
+	{ tag: 'BUY', group: 'buy', data: buy },
 ];
 
 /**
  * Build category-level multiselect choices (~35 options instead of 91 individual paths).
  * Each choice represents a category group (e.g. pfp.smartphones) with a path count hint.
+ * Titles are prefixed with [GROUP] so the list is scannable without disabled separator rows.
  * @returns {Array} choices array for prompts multiselect
  */
 function buildCategoryChoices() {
 	const choices = [];
-	for (const { label, group, data } of CATEGORY_GROUPS) {
-		choices.push({ title: label, disabled: true, value: `__sep_${group}` });
+	for (const { tag, group, data } of CATEGORY_GROUPS) {
 		for (const [category, paths] of Object.entries(data)) {
 			const count = Object.keys(paths).length;
-			const label = category.replace(/([A-Z])/g, ' $1').trim();
-			const capitalized = label.charAt(0).toUpperCase() + label.slice(1);
+			const raw = category.replace(/([A-Z])/g, ' $1').trim();
+			const capitalized = raw.charAt(0).toUpperCase() + raw.slice(1);
 			choices.push({
-				title: `${capitalized}  (${count} path${count !== 1 ? 's' : ''})`,
+				title: `[${tag}] ${capitalized}  (${count} path${count !== 1 ? 's' : ''})`,
 				value: `${group}:${category}`,
 			});
 		}
@@ -177,7 +177,7 @@ export async function getPagePathCategorySelections() {
 		onCancel: () => ({ pagePaths: [] }),
 	});
 
-	const selected = (response.pagePaths ?? []).filter(v => !String(v).startsWith('__sep_'));
+	const selected = response.pagePaths ?? [];
 
 	const dataMap = { pfp, pcd, pdp, buy };
 	return selected.map((value) => {

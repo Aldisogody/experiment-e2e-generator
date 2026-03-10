@@ -21,6 +21,15 @@ export async function updatePackageJson(targetDir) {
 		changes.push('Added Playwright dependencies to devDependencies');
 	}
 
+	// Detect stale self-reference left over from older generator versions
+	const hasStaleGenerator =
+		!!existingDevDeps['experiment-e2e-generator'] ||
+		!!(existingPackageJson.dependencies || {})['experiment-e2e-generator'];
+
+	if (hasStaleGenerator) {
+		changes.push('Removed experiment-e2e-generator from dependencies (no longer needed)');
+	}
+
 	// Collect script additions only — devDependencies are handled by installDependencies
 	const scriptAdditions = {};
 	const existingScripts = existingPackageJson.scripts || {};
@@ -37,9 +46,29 @@ export async function updatePackageJson(targetDir) {
 		return { updated: false, changes: [], packages: [] };
 	}
 
-	// Only rewrite the file when there are script additions
-	if (Object.keys(scriptAdditions).length > 0) {
-		const updatedPackageJson = mergePackageJson(existingPackageJson, { scripts: scriptAdditions });
+	// Rewrite file when there are script additions or the stale entry must be removed
+	if (Object.keys(scriptAdditions).length > 0 || hasStaleGenerator) {
+		// Build cleaned copy — never mutate existingPackageJson
+		const cleaned = {
+			...existingPackageJson,
+			...(existingPackageJson.devDependencies
+				? {
+						devDependencies: Object.fromEntries(
+							Object.entries(existingDevDeps).filter(([k]) => k !== 'experiment-e2e-generator')
+						),
+					}
+				: {}),
+			...(existingPackageJson.dependencies
+				? {
+						dependencies: Object.fromEntries(
+							Object.entries(existingPackageJson.dependencies).filter(
+								([k]) => k !== 'experiment-e2e-generator'
+							)
+						),
+					}
+				: {}),
+		};
+		const updatedPackageJson = mergePackageJson(cleaned, { scripts: scriptAdditions });
 		const formattedContent = formatPackageJson(updatedPackageJson);
 		await fs.writeFile(packageJsonPath, formattedContent, 'utf-8');
 	}

@@ -84,7 +84,6 @@ describe('updatePackageJson', () => {
 			version: '1.0.0',
 			devDependencies: {
 				'@playwright/test': '^1.49.0',
-				'experiment-e2e-generator': '^1.0.0',
 			},
 			scripts: {
 				'test:e2e': 'playwright test',
@@ -96,6 +95,32 @@ describe('updatePackageJson', () => {
 			assert.equal(result.updated, false);
 			assert.equal(result.changes.length, 0);
 			assert.deepEqual(result.packages, []);
+		} finally {
+			await fs.remove(tmpDir);
+		}
+	});
+
+	it('removes stale experiment-e2e-generator from devDependencies', async () => {
+		const tmpDir = await createTempProject({
+			name: 'test',
+			version: '1.0.0',
+			devDependencies: {
+				'@playwright/test': '^1.49.0',
+				'experiment-e2e-generator': '^1.3.0',
+			},
+			scripts: {
+				'test:e2e': 'playwright test',
+				'test:e2e:experiment': 'playwright test tests/e2e/*/experiment-test.spec.js',
+			},
+		});
+		try {
+			const result = await updatePackageJson(tmpDir);
+			assert.equal(result.updated, true);
+			assert.ok(result.changes.some((c) => c.includes('experiment-e2e-generator')));
+
+			const pkg = await fs.readJson(path.join(tmpDir, 'package.json'));
+			assert.equal(pkg.devDependencies['experiment-e2e-generator'], undefined);
+			assert.equal(pkg.devDependencies['@playwright/test'], '^1.49.0');
 		} finally {
 			await fs.remove(tmpDir);
 		}
