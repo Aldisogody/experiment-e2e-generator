@@ -2,7 +2,7 @@ import path from 'path';
 import prompts from 'prompts';
 import { detectExperimentName } from './utils.js';
 import { getMarketChoices, resolveMarkets, formatMarketCodes } from './markets.js';
-import { PAGE_PATH_CHOICES, getPagePathPromptChoices } from './page-paths.js';
+import { pfp, pcd, pdp, buy } from './page-paths.js';
 
 /**
  * Get user input through interactive prompts
@@ -129,29 +129,61 @@ export async function selectComponentSelector(candidates) {
 	return response.selector ?? null;
 }
 
+const CATEGORY_GROUPS = [
+	{ label: '── PFP (Filter/Listing pages)', group: 'pfp', data: pfp },
+	{ label: '── PCD (Category hubs)',        group: 'pcd', data: pcd },
+	{ label: '── PDP (Product Detail pages)', group: 'pdp', data: pdp },
+	{ label: '── BUY (Purchase pages)',       group: 'buy', data: buy },
+];
+
+/**
+ * Build category-level multiselect choices (~35 options instead of 91 individual paths).
+ * Each choice represents a category group (e.g. pfp.smartphones) with a path count hint.
+ * @returns {Array} choices array for prompts multiselect
+ */
+function buildCategoryChoices() {
+	const choices = [];
+	for (const { label, group, data } of CATEGORY_GROUPS) {
+		choices.push({ title: label, disabled: true, value: `__sep_${group}` });
+		for (const [category, paths] of Object.entries(data)) {
+			const count = Object.keys(paths).length;
+			const label = category.replace(/([A-Z])/g, ' $1').trim();
+			const capitalized = label.charAt(0).toUpperCase() + label.slice(1);
+			choices.push({
+				title: `${capitalized}  (${count} path${count !== 1 ? 's' : ''})`,
+				value: `${group}:${category}`,
+			});
+		}
+	}
+	return choices;
+}
+
 /**
  * Multi-select prompt: which Samsung page categories does this experiment target?
- * Choices are grouped by page type (PFP / PCD / PDP / BUY) with visual separators.
- * @returns {Promise<Array<{value: string, path: string, type: string}>>} Selected entries
+ * Uses category-level selection (~35 choices) instead of individual paths (91).
+ * @returns {Promise<Array<{group: string, category: string, paths: Object}>>} Selected categories
  */
-export async function getPagePathSelections() {
+export async function getPagePathCategorySelections() {
+	const choices = buildCategoryChoices();
+
 	const response = await prompts({
 		type: 'multiselect',
 		name: 'pagePaths',
-		message: 'Which page paths does your experiment target? (space to select, enter to confirm)',
-		choices: getPagePathPromptChoices(),
-		hint: '- Space to select. Return to submit',
+		message: 'Which page categories does your experiment target? (space to select, enter to confirm)',
+		choices,
+		hint: '- Space to select. Return to submit. Skip to use default (Smartphones)',
 		instructions: false,
 	}, {
 		onCancel: () => ({ pagePaths: [] }),
 	});
 
-	const selectedValues = (response.pagePaths ?? []).filter(v => !String(v).startsWith('__sep_'));
+	const selected = (response.pagePaths ?? []).filter(v => !String(v).startsWith('__sep_'));
 
-	// Re-attach path + type from PAGE_PATH_CHOICES (prompts returns only value)
-	return selectedValues.map((value) => {
-		const choice = PAGE_PATH_CHOICES.find((c) => c.value === value);
-		return choice ?? { value, path: `/${value}/`, type: 'PFP' };
+	const dataMap = { pfp, pcd, pdp, buy };
+	return selected.map((value) => {
+		const [group, category] = value.split(':');
+		const paths = dataMap[group]?.[category] ?? {};
+		return { group, category, paths };
 	});
 }
 

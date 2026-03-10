@@ -2,6 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
 import { copyTemplateFile, toKebabCase } from './utils.js';
+import { pfp } from './page-paths.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,8 +22,23 @@ function buildFallbackSelector(experimentNameKebab) {
 	return `[data-experiment="${experimentNameKebab}"]`;
 }
 
+/**
+ * Build the inlined PAGE_PATHS_JS string from selected categories.
+ * Falls back to pfp.smartphones if no selections were made.
+ * @param {Array<{group: string, category: string, paths: Object}>} selections
+ * @returns {string}
+ */
+function buildPagePathsJS(selections) {
+	const pathsObj = (selections && selections.length > 0)
+		? Object.assign({}, ...selections.map(s => s.paths))
+		: pfp.smartphones;
+
+	const lines = Object.entries(pathsObj).map(([k, v]) => `  ${k}: '${v}',`).join('\n');
+	return `export const pagePaths = {\n${lines}\n};`;
+}
+
 export async function generateTestFiles(targetDir, config) {
-	const { experimentName, baseUrl, marketGroup, markets, componentSelector } = config;
+	const { experimentName, baseUrl, marketGroup, markets, componentSelector, pagePaths } = config;
 	const experimentNameKebab = toKebabCase(experimentName);
 
 	// Template variables
@@ -33,6 +49,7 @@ export async function generateTestFiles(targetDir, config) {
 		MARKET_GROUP: marketGroup,
 		MARKETS_JSON: JSON.stringify(markets),
 		COMPONENT_SELECTOR: componentSelector ?? buildFallbackSelector(experimentNameKebab),
+		PAGE_PATHS_JS: buildPagePathsJS(pagePaths),
 	};
 	
 	// Define file mappings: [source, destination]

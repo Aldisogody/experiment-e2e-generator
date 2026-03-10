@@ -1,7 +1,7 @@
 import path from 'path';
 import chalk from 'chalk';
 import { validateProjectDirectory } from './utils.js';
-import { getUserInput, confirmAction, selectComponentSelector } from './prompts.js';
+import { getUserInput, confirmAction, selectComponentSelector, getPagePathCategorySelections } from './prompts.js';
 import { scanForSelectors } from './selector-scanner.js';
 import { generateTestFiles, testsDirectoryExists, getGeneratedFilesList, addTestsToEslintIgnore, addTestOutputDirsToGitignore } from './file-operations.js';
 import { updatePackageJson, isPlaywrightInstalled, installDependencies, runBuildAndTests } from './package-updater.js';
@@ -62,6 +62,11 @@ export async function generator() {
 	}
 	const chosenSelector = await selectComponentSelector(selectorCandidates);
 	config.componentSelector = chosenSelector;
+
+	// Step 2.6: Page-path category selection
+	console.log(chalk.blue('\n📄 Select page paths for your tests:\n'));
+	const selectedPagePaths = await getPagePathCategorySelections();
+	config.pagePaths = selectedPagePaths;
 
 	// Step 3: Generate files
 	console.log(chalk.blue('\n📁 Generating test files...\n'));
