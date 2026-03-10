@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.18] - 2026-03-10
+
+### Fix
+- Publish to npm to resolve corrupted 1.2.11 tarball (versions 1.2.12–1.2.17 were never pushed to registry)
+
+### Feat
+- Add experiment-e2e-generator to devDependencies in package updater
+
+### Chore
+- Bump version to 1.0.17
+
 ## [1.2.3] - 2026-02-25
 
 ### Chore
