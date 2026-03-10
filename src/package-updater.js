@@ -16,9 +16,13 @@ export async function updatePackageJson(targetDir) {
 
 	const existingDevDeps = existingPackageJson.devDependencies || {};
 	const needsPlaywright = !existingDevDeps['@playwright/test'];
+	const needsGenerator = !existingDevDeps['experiment-e2e-generator'] && !(existingPackageJson.dependencies || {})['experiment-e2e-generator'];
 
 	if (needsPlaywright) {
 		changes.push('Added Playwright dependencies to devDependencies');
+	}
+	if (needsGenerator) {
+		changes.push('Added experiment-e2e-generator to devDependencies');
 	}
 
 	// Collect script additions only — devDependencies are handled by installDependencies
@@ -46,6 +50,7 @@ export async function updatePackageJson(targetDir) {
 
 	const packages = [
 		...(needsPlaywright ? ['@playwright/test@1.40.0', 'playwright@1.40.0'] : []),
+		...(needsGenerator ? ['experiment-e2e-generator@latest'] : []),
 	];
 
 	return { updated: true, changes, packages };
